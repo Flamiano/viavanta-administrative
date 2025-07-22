@@ -125,7 +125,7 @@ export default function Home() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 2 }}
+          transition={{ duration: 0.4 }}
           variants={slideLeft}
         >
           <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tight">
