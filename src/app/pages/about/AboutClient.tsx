@@ -320,6 +320,113 @@ export default function AboutClient() {
         </motion.div>
       </section>
 
+      {/*About ViaVanta and Purpose */}
+      <section className="min-h-screen px-6 sm:px-12 py-25 text-white">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-10 items-start">
+          {/* Left Column */}
+          <div className="lg:col-span-3 space-y-6 py-10">
+            <motion.div
+              variants={fadeInUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.7 }}
+              className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-6"
+            >
+              <h1 className="text-5xl font-extrabold">ViaVanta</h1>
+              <p className="text-sm text-gray-200 sm:text-right mt-2 sm:mt-0 sm:ml-4">
+                Built by{" "}
+                <span className="font-semibold text-[var(--color-accent)]">
+                  ViaVanta Team
+                </span>
+              </p>
+            </motion.div>
+
+            <motion.p
+              variants={fadeInUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5 }}
+              className="text-lg text-white/90 leading-relaxed mb-2"
+            >
+              At ViaVanta, we believe in transforming the way administrative
+              systems function by creating modern, reliable, and intelligent
+              digital platforms. Our vision is to empower institutions to
+              operate more efficiently with tools that are flexible, secure, and
+              built for the future.
+            </motion.p>
+
+            {[
+              "ViaVanta Administrative is your unified platform for digitalized administrative operations from facility reservations to legal records and visitor management.",
+              "We streamline your workflows, eliminate redundancies, and deliver centralized control with maximum security.",
+              "ViaVanta brings intelligent organization to every task, making your processes smooth, consistent, and productive.",
+              "Built for institutions, schools, government offices, and large organizations—our platform ensures real-time collaboration and dependable data management.",
+              "With encrypted infrastructure and built-in audit trails, data protection and accountability become your default standard.",
+              "Scalable architecture means ViaVanta grows with your needs whether you manage a single office or multiple departments.",
+              "Our system integrates effortlessly with your current tools so transitions are smooth and adoption is fast.",
+            ].map((text, i) => (
+              <motion.p
+                key={i}
+                variants={fadeInUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.5, delay: i * 0.1 + 0.3 }}
+                className="text-lg text-white/90 leading-relaxed mb-2"
+              >
+                {text}
+              </motion.p>
+            ))}
+          </div>
+
+          {/* Right Column */}
+          <div className="lg:col-span-1 space-y-6">
+            <motion.div
+              variants={slideLeft}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.6 }}
+              className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl p-6"
+            >
+              <h2 className="text-xl font-bold text-white mb-4">
+                Core Capabilities
+              </h2>
+              <ul className="space-y-2 text-sm text-white/80">
+                <li>✓ Facilities Reservation</li>
+                <li>✓ Document Management</li>
+                <li>✓ Legal Management</li>
+                <li>✓ Visitor Management</li>
+                <li>✓ Real-time Monitoring</li>
+                <li>✓ Secured Access Controls</li>
+              </ul>
+            </motion.div>
+
+            <motion.div
+              variants={slideRight}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.7 }}
+              className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl p-6"
+            >
+              <h2 className="text-xl font-bold text-white mb-4">
+                Technology Stack
+              </h2>
+              <ul className="space-y-2 text-sm text-white/80">
+                <li>✓ Cloud-Native Infrastructure</li>
+                <li>✓ Encrypted Data Storage</li>
+                <li>✓ API-First Architecture</li>
+                <li>✓ Cross-Platform Compatibility</li>
+                <li>✓ Real-time Notifications</li>
+                <li>✓ Role-Based Access Control</li>
+              </ul>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Meet the Team Section */}
       <section className="relative w-full z-10 py-24 px-4 sm:px-10 text-center overflow-hidden">
         {/* DarkVeil as background */}
@@ -418,104 +525,6 @@ export default function AboutClient() {
             </div>
           </motion.div>
         </motion.div>
-      </section>
-
-      <section className="min-h-screen px-6 sm:px-12 py-25 text-white">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-10 items-start">
-          {/* Left Column: Main Content */}
-          <div className="lg:col-span-3 space-y-6 py-10">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-              className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-6"
-            >
-              <h1 className="text-5xl font-extrabold">ViaVanta</h1>
-              <p className="text-sm text-gray-200 sm:text-right mt-2 sm:mt-0 sm:ml-4">
-                Built by{" "}
-                <span className="font-semibold text-[var(--color-accent)]">
-                  ViaVanta Team
-                </span>
-              </p>
-            </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-lg text-white/90 leading-relaxed mb-2"
-            >
-              At ViaVanta, we believe in transforming the way administrative
-              systems function by creating modern, reliable, and intelligent
-              digital platforms. Our vision is to empower institutions to
-              operate more efficiently with tools that are flexible, secure, and
-              built for the future.
-            </motion.p>
-
-            {[
-              "ViaVanta Administrative is your unified platform for digitalized administrative operations from facility reservations to legal records and visitor management",
-              "We streamline your workflows eliminate redundancies and deliver centralized control with maximum security",
-              "ViaVanta brings intelligent organization to every task making your processes smooth consistent and productive",
-              "Built for institutions schools government offices and large organizations our platform ensures real time collaboration and dependable data management",
-              "With encrypted infrastructure and built in audit trails data protection and accountability become your default standard",
-              "Scalable architecture means ViaVanta grows with your needs whether you manage a single office or multiple departments",
-              "Our system integrates effortlessly with your current tools so transitions are smooth and adoption is fast",
-            ].map((text, i) => (
-              <motion.p
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.1 + 0.2 }}
-                className="text-lg text-white/90 leading-relaxed mb-2"
-              >
-                {text}
-              </motion.p>
-            ))}
-          </div>
-
-          {/* Right Column: Feature Boxes */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Core Capabilities Box */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl p-6"
-            >
-              <h2 className="text-xl font-bold text-white mb-4">
-                Core Capabilities
-              </h2>
-              <ul className="space-y-2 text-sm text-white/80">
-                <li>✓ Facilities Reservation</li>
-                <li>✓ Document Management</li>
-                <li>✓ Legal Management</li>
-                <li>✓ Visitor Management</li>
-                <li>✓ Real-time Monitoring</li>
-                <li>✓ Secured Access Controls</li>
-              </ul>
-            </motion.div>
-
-            {/* Technology Stack Box */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-              className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl p-6"
-            >
-              <h2 className="text-xl font-bold text-white mb-4">
-                Technology Stack
-              </h2>
-              <ul className="space-y-2 text-sm text-white/80">
-                <li>✓ Cloud-Native Infrastructure</li>
-                <li>✓ Encrypted Data Storage</li>
-                <li>✓ API-First Architecture</li>
-                <li>✓ Cross-Platform Compatibility</li>
-                <li>✓ Real-time Notifications</li>
-                <li>✓ Role-Based Access Control</li>
-              </ul>
-            </motion.div>
-          </div>
-        </div>
       </section>
 
       <Footer />
