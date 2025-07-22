@@ -121,7 +121,7 @@ export default function ContactClient() {
   };
 
   return (
-    <div className="font-body flex flex-col min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
+    <div className="font-body flex flex-col min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white overflow-hidden">
       <Navbar />
 
       {/* Contact Us Section */}
