@@ -96,16 +96,6 @@ export default function Home() {
     },
   ];
 
-  //Animations Framer-Motion
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
-  };
-
   return (
     <div className="font-body flex flex-col min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
       <Navbar />
