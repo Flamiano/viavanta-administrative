@@ -1,3 +1,5 @@
+"use client";
+
 import Navbar from "@/comps/Navbar";
 import Footer from "@/comps/Footer";
 import {
@@ -5,12 +7,12 @@ import {
   FaFacebook,
   FaGithub,
   FaYoutube,
-  FaTwitch,
   FaSlack,
   FaBolt,
 } from "react-icons/fa";
 import { CalendarCheck, FolderSearch, Scale, BadgeCheck } from "lucide-react";
 import InfiniteMenu from "@/comps/reactbits/InifiniteMenu";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const icons = [
@@ -18,7 +20,6 @@ export default function Home() {
     <FaFacebook key="facebook" />,
     <FaGithub key="github" />,
     <FaYoutube key="youtube" />,
-    <FaTwitch key="twitch" />,
     <FaSlack key="slack" />,
     <FaBolt key="bolt" />,
   ];
@@ -96,19 +97,54 @@ export default function Home() {
     },
   ];
 
+  // Animation Framer Variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  const slideLeft = {
+    hidden: { opacity: 0, x: -50 },
+    visible: { opacity: 1, x: 0 },
+  };
+
+  const slideRight = {
+    hidden: { opacity: 0, x: 50 },
+    visible: { opacity: 1, x: 0 },
+  };
+
   return (
-    <div className="font-body flex flex-col min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
+    <div className="font-body flex flex-col min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white overflow-hidden">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="h-screen flex flex-col items-center justify-center text-center px-6 sm:px-12 gap-10">
-        <div className="max-w-4xl">
+      <section className="h-screen flex flex-col items-center justify-center text-center px-6 sm:px-12 gap-5">
+        {/* Slide Left Title */}
+        <motion.div
+          className="max-w-4xl"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 2 }}
+          variants={slideLeft}
+        >
           <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tight">
             Welcome to{" "}
             <span className="text-blue-600 dark:text-blue-400">
               Administrative
             </span>
           </h1>
+        </motion.div>
+
+        {/* Fade In Paragraphs */}
+        <motion.div
+          className="max-w-4xl"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 1, delay: 0.2 }}
+          variants={fadeInUp}
+        >
           <p className="mt-4 text-md sm:text-lg text-gray-600 dark:text-gray-300">
             A platform designed to streamline and simplify the way you manage
             your travel and tour operations.
@@ -122,9 +158,17 @@ export default function Home() {
             Secure, fast, and built for scale — your digital command center is
             here.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="flex flex-row flex-wrap justify-center gap-4 w-full max-w-md">
+        {/* Slide Right Buttons */}
+        <motion.div
+          className="flex flex-row flex-wrap justify-center gap-4 w-full max-w-md"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 1, delay: 0.4 }}
+          variants={slideRight}
+        >
           <a
             href="#"
             className="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-full shadow"
@@ -137,7 +181,7 @@ export default function Home() {
           >
             Learn More
           </a>
-        </div>
+        </motion.div>
       </section>
 
       {/* Background Video Section */}
@@ -153,20 +197,42 @@ export default function Home() {
       </section>
 
       {/* Module Section */}
-      <section className="bg-blue-800 text-white py-16">
+      <section className="bg-blue-950 text-white py-16">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-6">
+          <motion.h2
+            className="text-3xl sm:text-4xl font-bold mb-6"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+            variants={fadeInUp}
+          >
             <span className="text-blue-400">Administrative</span> Module
-          </h2>
-          <p className="mb-12 text-gray-300 max-w-3xl mx-auto">
+          </motion.h2>
+
+          <motion.p
+            className="mb-12 text-gray-300 max-w-3xl mx-auto"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+            variants={fadeInUp}
+          >
             ViaVanta empowers administrators with essential tools to manage,
             organize, and streamline core operations — all in one secure
             platform.
-          </p>
+          </motion.p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Facilities Reservation */}
-            <div className="bg-blue-900 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all">
+            <motion.div
+              className="bg-blue-900 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              variants={slideLeft}
+            >
               <div className="text-blue-400 text-4xl mb-4 flex justify-center">
                 <CalendarCheck
                   size={40}
@@ -180,15 +246,22 @@ export default function Home() {
                 Easily manage booking of conference rooms, event halls, or any
                 facility with real-time scheduling and conflict prevention.
               </p>
-            </div>
+            </motion.div>
 
             {/* Document Management */}
-            <div className="bg-blue-900 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all">
+            <motion.div
+              className="bg-blue-900 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              variants={fadeInUp}
+            >
               <div className="text-blue-400 text-4xl mb-4 flex justify-center">
                 <FolderSearch
                   size={40}
                   className="text-blue-400 mb-4 mx-auto"
-                />{" "}
+                />
               </div>
               <h3 className="text-xl font-semibold mb-2">
                 Document Management
@@ -197,31 +270,45 @@ export default function Home() {
                 Organize, archive, and retrieve important documents securely.
                 Never lose vital files with our efficient archiving system.
               </p>
-            </div>
+            </motion.div>
 
             {/* Legal Management */}
-            <div className="bg-blue-900 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all">
+            <motion.div
+              className="bg-blue-900 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              variants={slideRight}
+            >
               <div className="text-blue-400 text-4xl mb-4 flex justify-center">
-                <Scale size={40} className="text-blue-400 mb-4 mx-auto" />{" "}
+                <Scale size={40} className="text-blue-400 mb-4 mx-auto" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Legal Management</h3>
               <p className="text-gray-300 text-sm">
                 Track legal cases, contracts, and compliance workflows to
                 maintain proper documentation and reduce liability.
               </p>
-            </div>
+            </motion.div>
 
             {/* Visitor Management */}
-            <div className="bg-blue-900 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all">
+            <motion.div
+              className="bg-blue-900 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              variants={slideLeft}
+            >
               <div className="text-blue-400 text-4xl mb-4 flex justify-center">
-                <BadgeCheck size={40} className="text-blue-400 mb-4 mx-auto" />{" "}
+                <BadgeCheck size={40} className="text-blue-400 mb-4 mx-auto" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Visitor Management</h3>
               <p className="text-gray-300 text-sm">
                 Register, monitor, and manage guest access with ease while
                 enhancing security and ensuring a smooth visitor experience.
               </p>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -239,8 +326,15 @@ export default function Home() {
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-            {/* Feature 1 */}
-            <div className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg transition-all">
+            {/* Feature 1 - Slide Left */}
+            <motion.div
+              variants={slideLeft}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg"
+            >
               <div className="text-blue-300 text-4xl mb-4 flex justify-center">
                 <i className="lucide lucide-shield-check" />
               </div>
@@ -249,10 +343,17 @@ export default function Home() {
                 Data encryption, role-based access, and audit logs ensure
                 sensitive data stays protected 24/7.
               </p>
-            </div>
+            </motion.div>
 
-            {/* Feature 2 */}
-            <div className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg transition-all">
+            {/* Feature 2 - Fade In Up */}
+            <motion.div
+              variants={fadeInUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg"
+            >
               <div className="text-blue-300 text-4xl mb-4 flex justify-center">
                 <i className="lucide lucide-layout-dashboard" />
               </div>
@@ -261,10 +362,17 @@ export default function Home() {
                 View, manage, and act on critical modules from one intuitive
                 dashboard interface.
               </p>
-            </div>
+            </motion.div>
 
-            {/* Feature 3 */}
-            <div className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg transition-all">
+            {/* Feature 3 - Slide Right */}
+            <motion.div
+              variants={slideRight}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg"
+            >
               <div className="text-blue-300 text-4xl mb-4 flex justify-center">
                 <i className="lucide lucide-bolt" />
               </div>
@@ -273,10 +381,17 @@ export default function Home() {
                 Optimized for both desktop and mobile, ViaVanta responds fast no
                 matter the device.
               </p>
-            </div>
+            </motion.div>
 
-            {/* Feature 4 */}
-            <div className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg transition-all">
+            {/* Feature 4 - Slide Left */}
+            <motion.div
+              variants={slideLeft}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg"
+            >
               <div className="text-blue-300 text-4xl mb-4 flex justify-center">
                 <i className="lucide lucide-settings" />
               </div>
@@ -285,10 +400,17 @@ export default function Home() {
                 Tailor features and modules to fit your organization’s workflow
                 and policies.
               </p>
-            </div>
+            </motion.div>
 
-            {/* Feature 5 */}
-            <div className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg transition-all">
+            {/* Feature 5 - Fade In Up */}
+            <motion.div
+              variants={fadeInUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg"
+            >
               <div className="text-blue-300 text-4xl mb-4 flex justify-center">
                 <i className="lucide lucide-users" />
               </div>
@@ -299,10 +421,17 @@ export default function Home() {
                 Built with users in mind — clean UI, smooth navigation, and
                 accessible design for all.
               </p>
-            </div>
+            </motion.div>
 
-            {/* Feature 6 */}
-            <div className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg transition-all">
+            {/* Feature 6 - Slide Right */}
+            <motion.div
+              variants={slideRight}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg"
+            >
               <div className="text-blue-300 text-4xl mb-4 flex justify-center">
                 <i className="lucide lucide-cloud-check" />
               </div>
@@ -311,7 +440,7 @@ export default function Home() {
                 Manage operations from anywhere — all you need is a device and
                 internet connection.
               </p>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>

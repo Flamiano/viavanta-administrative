@@ -1,4 +1,3 @@
-// layout.tsx
 import "./globals.css";
 import { Winky_Rough } from "next/font/google";
 import type { Metadata } from "next";
@@ -11,7 +10,10 @@ const winkyRough = Winky_Rough({
 });
 
 export const metadata: Metadata = {
-  title: "ViVanta",
+  title: {
+    default: "ViaVanta",
+    template: "ViaVanta - %s", // This is makes dynamic titles work
+  },
   description: "Administrative System for Travel and Tours",
   icons: {
     icon: "/logo/logo-dark-bg.png",

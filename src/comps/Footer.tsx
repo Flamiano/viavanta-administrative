@@ -3,14 +3,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 
 const currentYear = new Date().getFullYear();
+
+// Animation Framer Variants
+const slideLeft = {
+  hidden: { opacity: 0, x: -50 },
+  visible: { opacity: 1, x: 0 },
+};
+
+const slideRight = {
+  hidden: { opacity: 0, x: 50 },
+  visible: { opacity: 1, x: 0 },
+};
 
 export default function Footer() {
   const pathname = usePathname();
 
   const isActive = (href: string) => pathname === href;
-
   const linkClass = (href: string) =>
     `transition-colors duration-200 ${
       isActive(href)
@@ -21,9 +32,15 @@ export default function Footer() {
   return (
     <footer className="bg-[var(--color-brand-dark)] text-white px-6 md:px-16 py-10">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        {/* Left Side: Branding + Text + Links */}
-        <div className="flex flex-col gap-6">
-          {/* Logo */}
+        {/* Left Side */}
+        <motion.div
+          variants={slideLeft}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 2 }}
+          className="flex flex-col gap-6"
+        >
           <div className="flex items-center gap-4">
             <Image
               src="/logo/logo-dark-bg.png"
@@ -35,7 +52,6 @@ export default function Footer() {
             <h1 className="text-2xl font-extrabold tracking-wide">ViaVanta</h1>
           </div>
 
-          {/* Description Text */}
           <p className="text-sm text-white/80 leading-relaxed max-w-lg">
             At ViaVanta, we simplify space and service management for
             organizations and travelers alike. Whether you&apos;re booking a
@@ -44,7 +60,6 @@ export default function Footer() {
             design and smart integrations.
           </p>
 
-          {/* Footer Links */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-sm pt-2">
             <div>
               <h2 className="font-semibold mb-2 text-white/90">About</h2>
@@ -137,14 +152,20 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Copyright */}
           <p className="text-xs text-white/50 pt-4">
             &copy; {currentYear} ViaVanta. All rights reserved.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Right Side: Google Map Embed */}
-        <div className="w-full h-[300px]">
+        {/* Right Side: Google Map */}
+        <motion.div
+          variants={slideRight}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 2 }}
+          className="w-full h-[300px]"
+        >
           <iframe
             src="https://www.google.com/maps/embed?pb=!4v1752911672294!6m8!1m7!1stKVhwnDAMUbOWsTee6Yitg!2m2!1d14.72662985390938!2d121.0373473614249!3f254.22949!4f0!5f0.7820865974627469"
             className="w-full h-full rounded-lg border-0"
@@ -152,7 +173,7 @@ export default function Footer() {
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           ></iframe>
-        </div>
+        </motion.div>
       </div>
     </footer>
   );
