@@ -1,7 +1,14 @@
-// RootLayout.tsx
-
-import type { Metadata } from "next";
+// layout.tsx
 import "./globals.css";
+import { Winky_Rough } from "next/font/google";
+import type { Metadata } from "next";
+
+const winkyRough = Winky_Rough({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
+  variable: "--font-winky-rough",
+});
 
 export const metadata: Metadata = {
   title: "ViVanta",
@@ -13,24 +20,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <head>
-        {/* Winky Rough font manually loaded */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Winky+Rough:ital,wght@0,300..900;1,300..900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" className={winkyRough.className}>
       <body className="antialiased font-body">{children}</body>
     </html>
   );

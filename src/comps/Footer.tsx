@@ -38,7 +38,7 @@ export default function Footer() {
           {/* Description Text */}
           <p className="text-sm text-white/80 leading-relaxed max-w-lg">
             At ViaVanta, we simplify space and service management for
-            organizations and travelers alike. Whether you're booking a
+            organizations and travelers alike. Whether you&apos;re booking a
             facility, coordinating visitors, or overseeing legal processes, our
             platform brings everything together seamlessly—powered by intuitive
             design and smart integrations.

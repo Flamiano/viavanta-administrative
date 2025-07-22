@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Home, User, Lightbulb, Mail, PlaneTakeoff } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -36,9 +37,11 @@ export const Navbar = () => {
             {/* Left: Logo */}
             <div className="text-white text-sm sm:text-base font-bold">
               <Link href="/" className="flex items-center gap-2">
-                <img
+                <Image
                   src="/logo/logo-dark-bg.png"
                   alt="ViaVanta Logo"
+                  width={32}
+                  height={32}
                   className="h-6 sm:h-8 w-auto"
                 />
                 <span>ViaVanta</span>
