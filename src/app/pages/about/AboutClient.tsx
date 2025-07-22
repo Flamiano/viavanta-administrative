@@ -51,7 +51,7 @@ export default function AboutClient() {
         </h1>
         <p className="text-sm md:text-base max-w-2xl">
           A centralized administrative system designed to streamline your
-          organization's document, legal, facility, and visitor management.
+          organization&#39;s document, legal, facility, and visitor management.
         </p>
       </motion.section>
 
@@ -193,7 +193,7 @@ export default function AboutClient() {
               <h3 className="text-xl font-semibold mb-2">Modular Design</h3>
               <p className="opacity-90">
                 Our platform is built with flexibility in mind, allowing for
-                customizable workflows tailored to your team's needs.
+                customizable workflows tailored to your team&#39;s needs.
               </p>
             </motion.div>
 
