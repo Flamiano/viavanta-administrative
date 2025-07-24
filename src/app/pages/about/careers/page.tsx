@@ -29,7 +29,7 @@ export default function CareersPage() {
           Careers at AdvenTours
         </h1>
         <p className="text-sm md:text-base max-w-2xl">
-          Join a team that's passionate about innovation, travel, and creating
+          Join a team that&apos;s passionate about innovation, travel, and creating
           unforgettable digital experiences.
         </p>
       </motion.section>
@@ -52,7 +52,7 @@ export default function CareersPage() {
         >
           <h2 className="text-3xl md:text-4xl font-bold">Open Opportunities</h2>
           <p className="text-gray-600 mt-4 text-base md:text-lg">
-            Whether you're a creative, developer, or team lead — we have a place
+            Whether you&apos;re a creative, developer, or team lead — we have a place
             for you.
           </p>
         </motion.div>
