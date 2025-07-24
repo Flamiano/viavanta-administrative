@@ -126,24 +126,24 @@ export default function Footer() {
               <ul className="space-y-1">
                 <li>
                   <Link
-                    href="/pages/support/contact"
-                    className={linkClass("/pages/support/contact")}
+                    href="/pages/contact"
+                    className={linkClass("/pages/contact")}
                   >
                     Contact Us
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="/pages/support/faq"
-                    className={linkClass("/pages/support/faq")}
+                    href="/pages/contact/faq"
+                    className={linkClass("/pages/contact/faq")}
                   >
                     FAQs
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="/pages/support/helpdesk"
-                    className={linkClass("/pages/support/helpdesk")}
+                    href="/pages/contact/helpdesk"
+                    className={linkClass("/pages/contact/helpdesk")}
                   >
                     Helpdesk
                   </Link>

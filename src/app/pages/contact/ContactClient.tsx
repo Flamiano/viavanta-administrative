@@ -114,10 +114,10 @@ const faqGroups: FAQGroup[] = [
 ];
 
 export default function ContactClient() {
-  const [activeIndex, setActiveIndex] = useState<string | null>(null);
+  const [active, setActive] = useState<string | null>(null);
 
-  const toggleFAQ = (id: string) => {
-    setActiveIndex((prev) => (prev === id ? null : id));
+  const toggle = (id: string) => {
+    setActive(active === id ? null : id);
   };
 
   return (
@@ -142,76 +142,75 @@ export default function ContactClient() {
         </p>
       </motion.section>
 
-      {/* FAQs Section */}
-      <motion.section
-        className="text-dark py-16 px-6"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        variants={fadeInUp}
-      >
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Frequently Asked Questions (FAQs)
+      {/* FAQ Section */}
+      <section className="">
+        <div className="rounded-2xl shadow-xl p-8 sm:p-10">
+          <h2 className="text-3xl font-bold text-center text-white mb-12">
+            Frequently Asked Questions
           </h2>
 
           {faqGroups.map((group, groupIndex) => (
-            <motion.div
-              key={groupIndex}
-              className="mb-10"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: groupIndex * 0.1 }}
-              variants={slideLeft}
-            >
-              <h3 className="text-xl font-semibold mb-4">{group.title}</h3>
+            <div key={groupIndex} className="mb-10">
+              <h3 className="text-2xl font-semibold text-blue-700 mb-4">
+                {group.title}
+              </h3>
               <div className="space-y-4">
-                {group.items.map((faq, faqIndex) => {
-                  const id = `${groupIndex}-${faqIndex}`;
-                  const isOpen = activeIndex === id;
+                {group.items.map((item, itemIndex) => {
+                  const id = `${groupIndex}-${itemIndex}`;
+                  const isOpen = active === id;
 
                   return (
                     <div
                       key={id}
-                      className="border rounded-md bg-white shadow-sm"
+                      className={`border-2 rounded-xl transition-all duration-200 ${
+                        isOpen
+                          ? "border-blue-400 shadow-md"
+                          : "border-gray-100 hover:border-blue-200"
+                      }`}
                     >
                       <button
-                        onClick={() => toggleFAQ(id)}
-                        className="w-full flex justify-between items-center px-4 py-3 text-left text-black"
+                        onClick={() => toggle(id)}
+                        className={`flex justify-between items-center w-full p-6 text-left focus:outline-none ${
+                          isOpen ? "bg-gray-800 rounded-xl" : "bg-transparent"
+                        }`}
                       >
-                        <span className="font-medium">{faq.question}</span>
-                        {isOpen ? (
-                          <ChevronUp className="h-5 w-5" />
-                        ) : (
-                          <ChevronDown className="h-5 w-5" />
-                        )}
+                        <h4 className="text-lg font-medium text-white">
+                          {item.question}
+                        </h4>
+                        <svg
+                          className={`h-5 w-5 transform transition-transform duration-200 ${
+                            isOpen
+                              ? "rotate-180 text-gray-500"
+                              : "rotate-0 text-gray-400"
+                          }`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
                       </button>
-                      <AnimatePresence>
-                        {isOpen && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.8 }}
-                            className="px-4 pb-4 text-gray-700"
-                          >
-                            {faq.answer}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                      {isOpen && (
+                        <div className="px-6 pb-6 text-gray-600">
+                          {item.answer}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
-      </motion.section>
+      </section>
 
       {/* Info Section */}
-      <section className="bg-blue-800 text-white py-20 px-6 text-center mb-0 md:mb-10 lg:mb-15">
+      <section className="bg-blue-800 text-white py-20 px-6 text-center mb-0">
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -232,7 +231,7 @@ export default function ContactClient() {
       </section>
 
       {/* Contact Form */}
-      <section className="relative w-full h-[600px] text-white mb-0 md:mb-8 lg:mb-15">
+      <section className="relative w-full h-[700px] text-black bg-white mb-0 md:mb-8 lg:mb-15">
         <Threads amplitude={1} distance={0} enableMouseInteraction={true} />
         <motion.div
           className="absolute inset-0 flex items-center justify-center px-4"
@@ -242,10 +241,10 @@ export default function ContactClient() {
           transition={{ duration: 1 }}
           variants={fadeInUp}
         >
-          <div className="w-full max-w-5xl border border-white rounded-xl p-6 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="w-full max-w-5xl border border-black rounded-xl p-6 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div>
               <h2 className="text-2xl font-bold mb-2">Get in Touch</h2>
-              <p className="mb-4 text-gray-300 text-sm leading-relaxed">
+              <p className="mb-4 text-gray-500 text-sm leading-relaxed">
                 For questions, clarifications, or feedback about our
                 administrative system, please fill out the form below.
               </p>
