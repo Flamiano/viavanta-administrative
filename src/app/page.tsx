@@ -359,6 +359,130 @@ export default function Home() {
         </div>
       </motion.section>
 
+      {/* Document Management Section */}
+      <motion.section
+        className="py-20 bg-white dark:bg-gray-950"
+        variants={fadeInUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+      >
+        <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+          {/* Image Content on the Left */}
+          <motion.div
+            className="relative w-full h-80 rounded-xl overflow-hidden shadow-lg"
+            variants={slideLeft}
+          >
+            <Image
+              src="/assets/documents/6.png"
+              alt="Document Management System"
+              fill
+              priority
+              className="object-cover w-full h-full"
+            />
+          </motion.div>
+
+          {/* Text Content on the Right */}
+          <motion.div variants={slideRight}>
+            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+              Streamlined Document Management
+            </h2>
+            <p className="text-lg text-gray-700 dark:text-gray-300">
+              Organize, access, and manage important administrative files with
+              ease. Our Document Management system ensures that your records are
+              secure, searchable, and readily available.
+            </p>
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              Eliminate the hassle of paperwork and enjoy the efficiency of
+              digitized records at your fingertips.
+            </p>
+          </motion.div>
+        </div>
+      </motion.section>
+
+      {/* Legal Management Section */}
+      <motion.section
+        className="py-20 bg-white dark:bg-gray-950"
+        variants={fadeInUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+      >
+        <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+          {/* Text Content on the Left */}
+          <motion.div variants={slideLeft}>
+            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+              Comprehensive Legal Management
+            </h2>
+            <p className="text-lg text-gray-700 dark:text-gray-300">
+              Stay compliant and protected with our Legal Management system. We
+              ensure that all administrative operations follow regulatory
+              standards while maintaining transparency and accountability.
+            </p>
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              From contracts to legal documents, everything is organized,
+              secure, and easily accessible.
+            </p>
+          </motion.div>
+
+          {/* Image Content on the Right */}
+          <motion.div
+            className="relative w-full h-80 rounded-xl overflow-hidden shadow-lg"
+            variants={slideRight}
+          >
+            <Image
+              src="/assets/legal/4.png"
+              alt="Legal Management System"
+              fill
+              priority
+              className="object-cover w-full h-full"
+            />
+          </motion.div>
+        </div>
+      </motion.section>
+
+      {/* Visitor Management Section */}
+      <motion.section
+        className="py-20 bg-white dark:bg-gray-950"
+        variants={fadeInUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+      >
+        <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+          {/* Image Content on the Left */}
+          <motion.div
+            className="relative w-full h-80 rounded-xl overflow-hidden shadow-lg"
+            variants={slideLeft}
+          >
+            <Image
+              src="/assets/visitors/1.png"
+              alt="Visitor Management System"
+              fill
+              priority
+              className="object-cover w-full h-full"
+            />
+          </motion.div>
+
+          {/* Text Content on the Right */}
+          <motion.div variants={slideRight}>
+            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+              Smart Visitor Management
+            </h2>
+            <p className="text-lg text-gray-700 dark:text-gray-300">
+              Track, manage, and welcome your guests with efficiency. Our
+              Visitor Management system offers secure check-in processes,
+              real-time logs, and visitor history to ensure a safe and organized
+              environment.
+            </p>
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              Empower your front desk with digital tools that streamline visitor
+              handling and boost your professional image.
+            </p>
+          </motion.div>
+        </div>
+      </motion.section>
+
       {/* Features Section */}
       <section className="bg-blue-800 py-20 text-white">
         <div className="container mx-auto px-6 text-center">
