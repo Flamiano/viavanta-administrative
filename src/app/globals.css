@@ -29,3 +29,20 @@ body {
     transform: translateX(-50%);
   }
 }
+
+/* For Car Facilities Solutions Page*/
+
+@keyframes scrollX {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.scroll-x {
+  display: flex;
+  gap: 2rem;
+  width: max-content;
+  animation: scrollX 40s linear infinite;
+}

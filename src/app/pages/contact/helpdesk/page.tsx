@@ -15,21 +15,56 @@ export default function HelpDeskPage() {
     <div className="font-body flex flex-col min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white overflow-hidden">
       <Navbar />
 
-      {/* Hero */}
-      <section className="bg-blue-700 text-white py-30 text-center px-4">
-        <motion.div
-          variants={fadeInUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Help Desk</h1>
-          <p className="text-sm md:text-base text-white/90 max-w-2xl mx-auto">
-            Need assistance? Our support team is ready to help you through
-            phone, email, or live chat.
-          </p>
-        </motion.div>
+      {/* Help Desk Hero Section */}
+      <section className="relative bg-gradient-to-r from-blue-700 via-blue-800 to-blue-900 overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative z-10 py-24 sm:py-32 lg:max-w-2xl lg:w-full">
+            <div className="px-4 sm:px-6 lg:px-8 text-center lg:text-left">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
+                  <span className="block">Help Desk</span>
+                  <span className="block text-purple-100">
+                    We're Here to Assist You
+                  </span>
+                </h1>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.3 }}
+              >
+                <p className="mt-4 text-lg text-purple-100 sm:mt-6 sm:max-w-xl">
+                  Need assistance? Our support team is ready to help you through
+                  phone, email, or live chat.
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
+        {/* Decorative Help Icon SVG */}
+        <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4">
+          <svg
+            className="w-72 h-72 text-purple-200 opacity-15"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 
+      10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm1.07-7.75l-.9.92C12.45 
+      12.9 12 13.5 12 15h-2v-.5c0-1 .45-1.75 
+      1.17-2.42l1.24-1.26A1.49 1.49 0 0013 9.5c0-.83-.67-1.5-1.5-1.5S10 
+      8.67 10 9.5H8c0-1.66 1.34-3 3-3s3 1.34 
+      3 3c0 .79-.31 1.5-.93 2.08z"
+            />
+          </svg>
+        </div>
       </section>
 
       {/* Support Cards */}

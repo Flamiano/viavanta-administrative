@@ -27,22 +27,60 @@ export default function TeamPage() {
     <div className="font-body flex flex-col min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white overflow-hidden">
       <Navbar />
 
-      {/* Hero Section */}
-      <motion.section
-        className="flex flex-col justify-center items-center h-[400px] bg-blue-800 text-white px-4 text-center"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        variants={fadeInUp}
-      >
-        <h1 className="text-3xl md:text-5xl font-bold mb-4">Meet the Team</h1>
-        <p className="text-sm md:text-base max-w-2xl">
-          We are BSIT 31007 students majoring in Information Management, united
-          in building an efficient system through teamwork, dedication, and
-          innovation.
-        </p>
-      </motion.section>
+      {/* Team Hero Section */}
+      <div className="relative bg-blue-700 overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative z-10 pb-8 sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
+            <div className="pt-10 sm:pt-16 lg:pt-8 lg:pb-14 lg:overflow-hidden">
+              <div className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
+                <div className="sm:text-center lg:text-left">
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                  >
+                    <h1 className="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl">
+                      <span className="block">Meet the Team</span>
+                      <span className="block text-blue-100">
+                        Driven by Innovation & Unity
+                      </span>
+                    </h1>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 0.3 }}
+                  >
+                    <p className="mt-3 text-base text-blue-100 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                      We are BSIT 31007 students majoring in Information
+                      Management, united in building an efficient system through
+                      teamwork, dedication, and innovation.
+                    </p>
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Decorative Abstract Lines SVG */}
+        <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4">
+          <svg
+            className="w-72 h-72 text-blue-300 opacity-20"
+            fill="none"
+            viewBox="0 0 200 200"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M50 50 C70 20, 130 20, 150 50 S170 130, 150 150 70 170, 50 150 30 80, 50 50"
+              stroke="currentColor"
+              strokeWidth="4"
+              fill="none"
+            />
+          </svg>
+        </div>
+      </div>
 
       {/* About Us Section */}
       <section className="py-20 px-6 text-white">

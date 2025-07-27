@@ -4,7 +4,6 @@ import Navbar from "@/comps/Navbar";
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp, Phone, Mail } from "lucide-react";
 import Footer from "@/comps/Footer";
 import Threads from "@/comps/reactbits/Threads";
 
@@ -114,92 +113,128 @@ const faqGroups: FAQGroup[] = [
 ];
 
 export default function ContactClient() {
-  const [active, setActive] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   const toggle = (id: string) => {
-    setActive(active === id ? null : id);
+    setActiveId((prev) => (prev === id ? null : id));
   };
 
   return (
     <div className="font-body flex flex-col min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white overflow-hidden">
       <Navbar />
 
-      {/* Contact Us Section */}
-      <motion.section
-        className="flex flex-col justify-center items-center h-[400px] bg-blue-800 text-white px-4 text-center"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        variants={fadeInUp}
-      >
-        <h1 className="text-3xl md:text-5xl font-bold mb-4">Contact Us</h1>
-        <p className="text-[14px] mb-2 flex items-center justify-center">
-          <Phone className="text-white h-4" /> +63 912 345 6789
-        </p>
-        <p className="text-[14px] flex items-center justify-center gap-1">
-          <Mail className="text-white h-4" /> support@viavanta.com
-        </p>
-      </motion.section>
+      {/* Contact Hero Section */}
+      <section className="relative bg-gradient-to-r from-blue-700 via-blue-800 to-blue-900 overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative z-10 py-24 sm:py-32 lg:max-w-2xl lg:w-full">
+            <div className="px-4 sm:px-6 lg:px-8 text-center lg:text-left">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
+                  <span className="block">Get in Touch</span>
+                  <span className="block text-blue-100">
+                    We're Here to Help
+                  </span>
+                </h1>
+              </motion.div>
 
-      {/* FAQ Section */}
-      <section className="">
-        <div className="rounded-2xl shadow-xl p-8 sm:p-10">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.3 }}
+              >
+                <p className="mt-4 text-lg text-blue-100 sm:mt-6 sm:max-w-xl">
+                  Reach out to our team for support, inquiries, or
+                  collaboration. We value your connection.
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
+        {/* Decorative Contact SVG (Envelope with waves) */}
+        <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4">
+          <svg
+            className="w-72 h-72 text-blue-200 opacity-15"
+            fill="none"
+            viewBox="0 0 200 200"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M30 60c0-5 4-9 9-9h122c5 0 9 4 9 9v80c0 5-4 9-9 9H39c-5 0-9-4-9-9V60zm9 0l61 43 61-43"
+              stroke="currentColor"
+              strokeWidth="4"
+              fill="none"
+            />
+            <path
+              d="M50 150c15-10 85-10 100 0"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeDasharray="5 5"
+            />
+          </svg>
+        </div>
+      </section>
+
+      <section className="py-16 bg-gray-900">
+        <div className="rounded-2xl shadow-xl p-8 sm:p-10 max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-white mb-12">
             Frequently Asked Questions
           </h2>
 
           {faqGroups.map((group, groupIndex) => (
             <div key={groupIndex} className="mb-10">
-              <h3 className="text-2xl font-semibold text-blue-700 mb-4">
+              <h3 className="text-2xl font-semibold text-blue-400 mb-4">
                 {group.title}
               </h3>
               <div className="space-y-4">
                 {group.items.map((item, itemIndex) => {
                   const id = `${groupIndex}-${itemIndex}`;
-                  const isOpen = active === id;
+                  const isOpen = activeId === id;
 
                   return (
                     <div
                       key={id}
-                      className={`border-2 rounded-xl transition-all duration-200 ${
+                      className={`border rounded-xl transition-all duration-300 overflow-hidden ${
                         isOpen
-                          ? "border-blue-400 shadow-md"
-                          : "border-gray-100 hover:border-blue-200"
+                          ? "border-blue-500 shadow-md"
+                          : "border-gray-200 hover:border-blue-300"
                       }`}
                     >
                       <button
                         onClick={() => toggle(id)}
-                        className={`flex justify-between items-center w-full p-6 text-left focus:outline-none ${
-                          isOpen ? "bg-gray-800 rounded-xl" : "bg-transparent"
-                        }`}
+                        className="flex justify-between items-center w-full p-5 text-left bg-gray-800 rounded-xl"
                       >
-                        <h4 className="text-lg font-medium text-white">
+                        <span className="text-white font-medium">
                           {item.question}
-                        </h4>
-                        <svg
-                          className={`h-5 w-5 transform transition-transform duration-200 ${
-                            isOpen
-                              ? "rotate-180 text-gray-500"
-                              : "rotate-0 text-gray-400"
-                          }`}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
+                        </span>
+                        <motion.span
+                          animate={{ rotate: isOpen ? 180 : 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="text-gray-400"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
+                          ▼
+                        </motion.span>
                       </button>
-                      {isOpen && (
-                        <div className="px-6 pb-6 text-gray-600">
-                          {item.answer}
-                        </div>
-                      )}
+
+                      <AnimatePresence initial={false}>
+                        {isOpen && (
+                          <motion.div
+                            key="content"
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="px-5 pb-4 text-gray-300"
+                          >
+                            {item.answer}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   );
                 })}
@@ -231,7 +266,7 @@ export default function ContactClient() {
       </section>
 
       {/* Contact Form */}
-      <section className="relative w-full h-[700px] text-black bg-white mb-0 md:mb-8 lg:mb-15">
+      <section className="relative w-full h-[700px] text-black bg-white/79 mb-0 md:mb-8 lg:mb-15">
         <Threads amplitude={1} distance={0} enableMouseInteraction={true} />
         <motion.div
           className="absolute inset-0 flex items-center justify-center px-4"

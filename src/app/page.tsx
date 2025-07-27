@@ -2,6 +2,7 @@
 
 import Navbar from "@/comps/Navbar";
 import Footer from "@/comps/Footer";
+import Image from "next/image";
 import {
   FaGoogle,
   FaFacebook,
@@ -123,8 +124,7 @@ export default function Home() {
         <motion.div
           className="max-w-4xl"
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.4 }}
+          animate="visible"
           transition={{ duration: 0.4 }}
           variants={slideLeft}
         >
@@ -140,8 +140,7 @@ export default function Home() {
         <motion.div
           className="max-w-4xl"
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.4 }}
+          animate="visible"
           transition={{ duration: 1, delay: 0.2 }}
           variants={fadeInUp}
         >
@@ -164,8 +163,7 @@ export default function Home() {
         <motion.div
           className="flex flex-row flex-wrap justify-center gap-4 w-full max-w-md"
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.4 }}
+          animate="visible"
           transition={{ duration: 1, delay: 0.4 }}
           variants={slideRight}
         >
@@ -193,7 +191,12 @@ export default function Home() {
           loop
           muted
           playsInline
-        />
+          preload="auto"
+          disablePictureInPicture
+          controls={false}
+        >
+          Sorry, your browser does not support embedded videos.
+        </video>
       </section>
 
       {/* Module Section */}
@@ -312,6 +315,49 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Reservation Section */}
+      <motion.section
+        className="py-20"
+        variants={fadeInUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+      >
+        <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+          {/* Text Content */}
+          <motion.div variants={slideLeft}>
+            <h2 className="text-4xl font-bold mb-4">
+              Exclusive Condo Facilities Reservation
+            </h2>
+            <p className="text-lg text-gray-300">
+              Discover comfort and convenience with our premium condo
+              accommodations—available exclusively for ViaVanta Administrative
+              Travel and Tours clients. Ideal for executives, guests, and
+              private events, our facilities ensure a relaxing and productive
+              stay.
+            </p>
+            <p className="mt-4 text-gray-400 text-sm">
+              Reserve your space today and enjoy top-tier amenities in a secure
+              and professional setting.
+            </p>
+          </motion.div>
+
+          {/* Image Content */}
+          <motion.div
+            className="relative w-full h-80 rounded-xl overflow-hidden shadow-lg"
+            variants={slideRight}
+          >
+            <Image
+              src="/assets/facilities/condo/1.jpg"
+              alt="ViaVanta Condo Facility"
+              fill
+              priority
+              className="object-cover w-full h-full"
+            />
+          </motion.div>
+        </div>
+      </motion.section>
 
       {/* Features Section */}
       <section className="bg-blue-800 py-20 text-white">

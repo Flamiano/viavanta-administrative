@@ -92,30 +92,22 @@ export default function Footer() {
             </div>
 
             <div>
-              <h2 className="font-semibold mb-2 text-white/90">Solutions</h2>
+              <h2 className="font-semibold mb-2 text-white/90">Legal</h2>
               <ul className="space-y-1">
                 <li>
                   <Link
-                    href="/pages/solutions/legal"
-                    className={linkClass("/pages/solutions/legal")}
+                    href="/pages/legal/privacy"
+                    className={linkClass("/pages/legal/privacy")}
                   >
-                    Legal
+                    Privacy Policy
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="/pages/solutions/visitor"
-                    className={linkClass("/pages/solutions/visitor")}
+                    href="/pages/legal/terms"
+                    className={linkClass("/pages/legal/terms")}
                   >
-                    Visitor Management
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/pages/solutions/facilities"
-                    className={linkClass("/pages/solutions/facilities")}
-                  >
-                    Facilities Reservation
+                    Terms & Conditions
                   </Link>
                 </li>
               </ul>
@@ -169,10 +161,10 @@ export default function Footer() {
           <iframe
             src="https://www.google.com/maps/embed?pb=!4v1752911672294!6m8!1m7!1stKVhwnDAMUbOWsTee6Yitg!2m2!1d14.72662985390938!2d121.0373473614249!3f254.22949!4f0!5f0.7820865974627469"
             className="w-full h-full rounded-lg border-0"
-            allowFullScreen
+            allow="fullscreen; geolocation"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-          ></iframe>
+          />
         </motion.div>
       </div>
     </footer>

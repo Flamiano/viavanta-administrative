@@ -43,6 +43,7 @@ export const Navbar = () => {
                   width={32}
                   height={32}
                   className="h-6 sm:h-8 w-auto"
+                  priority
                 />
                 <span>ViaVanta</span>
 

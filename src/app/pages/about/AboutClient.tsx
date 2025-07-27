@@ -37,34 +37,60 @@ export default function AboutClient() {
     <div className="font-body flex flex-col min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white overflow-hidden">
       <Navbar />
 
-      {/* Hero Section */}
-      <motion.section
-        className="flex flex-col justify-center items-center h-[400px] bg-blue-800 text-white px-4 text-center"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        variants={fadeInUp}
-      >
-        <h1 className="text-3xl md:text-5xl font-bold mb-4">
-          About Our System
-        </h1>
-        <p className="text-sm md:text-base max-w-2xl">
-          A centralized administrative system designed to streamline your
-          organization&#39;s document, legal, facility, and visitor management.
-        </p>
-      </motion.section>
+      {/* About Hero Section */}
+      <section className="relative bg-gradient-to-r from-blue-700 via-blue-800 to-blue-900 overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative z-10 py-24 sm:py-32 lg:max-w-2xl lg:w-full">
+            <div className="px-4 sm:px-6 lg:px-8 text-center lg:text-left">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
+                  <span className="block">Centralized System</span>
+                  <span className="block text-blue-100">for Admin Control</span>
+                </h1>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.3 }}
+              >
+                <p className="mt-4 text-lg text-blue-100 sm:mt-6 sm:max-w-xl">
+                  Our system unifies document, legal, facility, and visitor
+                  management into one powerful platform.
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
+        {/* Decorative Gear + Nodes SVG */}
+        <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4">
+          <svg
+            className="w-72 h-72 text-blue-200 opacity-15"
+            fill="none"
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill="currentColor"
+              d="M487.4 315.7l-37.5-21.6c2.2-14.4 2.2-29.3 0-43.7l37.5-21.6c9.1-5.3 13-16.4 9.1-26.4-11.6-29.3-29.2-56-51.2-78l-1.4-1.4c-7.2-7.2-18-9.2-26.7-4.4l-37.5 21.6c-11.3-9.3-23.8-17.2-37.3-23.3V60.1c0-10.5-6.8-19.8-16.7-22.7-31.3-9.5-64.9-11-97.2 0-9.9 2.9-16.7 12.2-16.7 22.7v43.4c-13.5 6.1-26 14-37.3 23.3l-37.5-21.6c-8.7-4.9-19.5-2.8-26.7 4.4l-1.4 1.4c-22 22-39.6 48.7-51.2 78-3.9 10-0.1 21.1 9.1 26.4l37.5 21.6c-2.2 14.4-2.2 29.3 0 43.7l-37.5 21.6c-9.1 5.3-13 16.4-9.1 26.4 11.6 29.3 29.2 56 51.2 78l1.4 1.4c7.2 7.2 18 9.2 26.7 4.4l37.5-21.6c11.3 9.3 23.8 17.2 37.3 23.3v43.4c0 10.5 6.8 19.8 16.7 22.7 31.3 9.5 64.9 11 97.2 0 9.9-2.9 16.7-12.2 16.7-22.7v-43.4c13.5-6.1 26-14 37.3-23.3l37.5 21.6c8.7 4.9 19.5 2.8 26.7-4.4l1.4-1.4c22-22 39.6-48.7 51.2-78 3.9-10 .1-21.1-9.1-26.4zM256 336c-44.2 0-80-35.8-80-80s35.8-80 80-80 80 35.8 80 80-35.8 80-80 80z"
+            />
+          </svg>
+        </div>
+      </section>
 
       {/* Mission and Vision Section */}
       <section className="py-20 px-6 bg-white dark:bg-gray-950 text-center">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Mission Card */}
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            variants={slideLeft}
             className="bg-gray-100 dark:bg-gray-900 shadow-lg rounded-2xl p-8 text-left"
           >
             <div className="flex items-center gap-3 mb-4">
@@ -82,11 +108,9 @@ export default function AboutClient() {
 
           {/* Vision Card */}
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            variants={slideRight}
             className="bg-gray-100 dark:bg-gray-900 shadow-lg rounded-2xl p-8 text-left"
           >
             <div className="flex items-center gap-3 mb-4">
