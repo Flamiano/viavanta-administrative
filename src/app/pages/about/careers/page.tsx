@@ -38,8 +38,8 @@ export default function CareersPage() {
                 transition={{ duration: 1, delay: 0.3 }}
               >
                 <p className="mt-4 text-lg text-blue-100 sm:mt-6 sm:max-w-xl">
-                  Join a team that's passionate about innovation, travel, and
-                  creating unforgettable digital experiences.
+                  Join a team that&apos;s passionate about innovation, travel,
+                  and creating unforgettable digital experiences.
                 </p>
               </motion.div>
             </div>
@@ -138,34 +138,6 @@ export default function CareersPage() {
       </section>
 
       <Footer />
-    </div>
-  );
-}
-
-// Components
-function JobCard({
-  icon,
-  title,
-  description,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="bg-gray-100 p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 text-center">
-      <div className="flex justify-center mb-4">{icon}</div>
-      <h3 className="text-xl font-semibold mb-2 text-black">{title}</h3>
-      <p className="text-sm text-gray-700">{description}</p>
-    </div>
-  );
-}
-
-function Perk({ title, description }: { title: string; description: string }) {
-  return (
-    <div className="flex flex-col items-center text-center max-w-[250px] w-full">
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-sm text-gray-300">{description}</p>
     </div>
   );
 }

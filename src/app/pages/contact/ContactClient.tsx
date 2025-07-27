@@ -136,7 +136,7 @@ export default function ContactClient() {
                 <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
                   <span className="block">Get in Touch</span>
                   <span className="block text-blue-100">
-                    We're Here to Help
+                    We&apos;re Here to Help
                   </span>
                 </h1>
               </motion.div>

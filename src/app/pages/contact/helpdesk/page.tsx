@@ -28,7 +28,7 @@ export default function HelpDeskPage() {
                 <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
                   <span className="block">Help Desk</span>
                   <span className="block text-purple-100">
-                    We're Here to Assist You
+                    We&apos;re Here to Assist You
                   </span>
                 </h1>
               </motion.div>

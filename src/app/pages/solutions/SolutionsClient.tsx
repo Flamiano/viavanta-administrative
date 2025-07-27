@@ -186,9 +186,10 @@ export default function SolutionsClient() {
   useEffect(() => {
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % roomFacilities.length);
-    }, 4000); // auto-slide every 4s
+    }, 4000);
+
     return () => clearInterval(timer);
-  }, []);
+  }, [roomFacilities.length]);
 
   return (
     <div className="font-body flex flex-col min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white overflow-hidden">
@@ -479,9 +480,11 @@ export default function SolutionsClient() {
                 key={index}
                 className="min-w-[300px] bg-gray-50 rounded-xl shadow hover:shadow-lg transition overflow-hidden"
               >
-                <img
+                <Image
                   src={car.src}
                   alt={car.title}
+                  width={300}
+                  height={192}
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-4 text-left">
@@ -510,8 +513,8 @@ export default function SolutionsClient() {
             <p className="text-lg text-gray-300">
               At ViaVanta Travel and Tours, we believe that every journey should
               be as unique and unforgettable as the people taking it. Whether
-              you're seeking adventure, relaxation, or cultural discovery —
-              we're here to turn your travel dreams into reality.
+              you&apos;re seeking adventure, relaxation, or cultural discovery —
+              we&apos;re here to turn your travel dreams into reality.
             </p>
             <p className="text-base text-gray-300">
               From seamless itineraries to curated experiences, we go beyond
@@ -521,9 +524,9 @@ export default function SolutionsClient() {
             </p>
             <p className="text-base text-gray-300">
               Secure, stress-free, and tailored for you — ViaVanta handles every
-              detail so you can focus on the experience. Whether you're planning
-              a romantic escape, a family holiday, or a corporate retreat, now
-              is the perfect time to explore.
+              detail so you can focus on the experience. Whether you&apos;re
+              planning a romantic escape, a family holiday, or a corporate
+              retreat, now is the perfect time to explore.
             </p>
             <p className="text-base text-gray-300">
               Don’t wait for someday. Make memories that matter —{" "}
@@ -602,11 +605,15 @@ export default function SolutionsClient() {
               key={index}
               className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition"
             >
-              <img
-                src={item.src}
-                alt={item.title}
-                className="w-full h-48 object-cover"
-              />
+              {/* Container for Image with relative positioning */}
+              <div className="relative w-full h-48">
+                <Image
+                  src={item.src}
+                  alt={item.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
               <div className="p-6 text-left">
                 <h3 className="text-xl font-semibold text-gray-800">
                   {item.title}
@@ -629,10 +636,12 @@ export default function SolutionsClient() {
                   key={item.title}
                   className="w-full md:w-1/2 h-screen relative overflow-hidden"
                 >
-                  <img
+                  <Image
                     src={item.src}
                     alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    priority={i === 0 && offset === 0} // prioritize loading the first one
                   />
                   <div className="absolute inset-0 bg-black/60 bg-opacity-50 flex flex-col items-center justify-center text-center px-6">
                     <h3 className="text-white font-extrabold text-3xl mb-4">
