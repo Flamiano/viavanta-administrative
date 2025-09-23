@@ -3,9 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import supabase from "@/utils/Supabase";
 import { User as UserIcon } from "lucide-react";
+import Image from "next/image";
+
+interface User {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+}
 
 type MessagePageProps = {
-  userData: any;
+  userData: User | null;
 };
 
 type Message = {
@@ -175,9 +183,11 @@ export default function MessagePage({ userData }: MessagePageProps) {
                     {!isUser && (
                       <div className="flex-shrink-0 mr-2">
                         <div className="w-7 h-7 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
-                          <img
+                          <Image
                             src="/logo/logo-white-bg.png"
                             alt="Admin"
+                            width={28} 
+                            height={28}
                             className="w-full h-full object-cover"
                           />
                         </div>

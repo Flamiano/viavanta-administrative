@@ -25,7 +25,7 @@ import {
   Legend,
 } from "recharts";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/utils/Supabase";
 import FacilitiesPage from "./facilities/page";
@@ -33,28 +33,100 @@ import LegalPage from "./legal/page";
 import MessagePage from "./message/page";
 import AdminFooter from "@/comps/user-admin-footer/page";
 
+// ---------- Types ----------
+interface ApprovedBy {
+  id: number;
+  name: string;
+}
+
+interface User {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  session_token: string;
+  approved_by?: ApprovedBy | null;
+  approved_by_name?: string | null;
+  visa_image_url?: string | null;
+  passport_image_url?: string | null;
+  valid_id_front_url?: string | null;
+  valid_id_back_url?: string | null;
+  reserved_facilities_count?: number;
+  cases_count?: number;
+  compliances_count?: number;
+  activity_data?: ActivityRecord[];
+  records?: UserRecord[]; // 👈 add this
+}
+
+interface Facility {
+  category: string;
+  car_unit: string;
+  plate_number: string;
+  pickup_location: string;
+  driver_name: string;
+  driver_number: string;
+  description?: string;
+}
+
+interface Reservation {
+  id: number;
+  reservation_date: string;
+  start_time: string;
+  end_time: string;
+  facilities: Facility;
+}
+
+interface CaseRecord {
+  filed_date: string;
+}
+
+interface FacilityReservation {
+  reservation_date: string;
+}
+
+interface ComplianceRecord {
+  due_date: string;
+}
+
+interface ActivityRecord {
+  date: string;
+  facilities: number;
+  cases: number;
+  compliances: number;
+}
+
+interface UserRecord {
+  id: number;
+  title: string;
+  description?: string;
+  date?: string;
+}
+
 export default function UserDashboardPage() {
   const router = useRouter();
 
   // States
   const [time, setTime] = useState<string>("");
   const [active, setActive] = useState("Dashboard");
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<User | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const pageTitles: Record<string, string> = {
-    Dashboard: "Users",
-    Facilities: "Facilities",
-    Legal: "Legal",
-    Settings: "Settings",
-  };
+  const pageTitles = useMemo(
+    () => ({
+      Dashboard: "Users",
+      Facilities: "Facilities",
+      Legal: "Legal",
+      Settings: "Settings",
+    }),
+    []
+  );
 
   useEffect(() => {
     const tabTitle = pageTitles[active] || "";
     document.title = tabTitle ? `ViaVanta - ${tabTitle}` : "ViaVanta";
-  }, [active]);
+  }, [active, pageTitles]);
 
   // Profile update form states
   const [newName, setNewName] = useState("");
@@ -69,7 +141,7 @@ export default function UserDashboardPage() {
   );
 
   // For active reservation
-  const [myReservation, setMyReservation] = useState<any | null>(null);
+  const [myReservation, setMyReservation] = useState<Reservation | null>(null);
 
   // State for logout
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -114,17 +186,16 @@ export default function UserDashboardPage() {
       }
 
       try {
-        // Fetch user info along with approved_by admin
         const { data, error } = await supabase
           .from("users")
           .select(
             `
-        *,
-        approved_by (
-          id,
-          name
-        )
-      `
+            *,
+            approved_by (
+              id,
+              name
+            )
+          `
           )
           .eq("id", Number(userId))
           .single();
@@ -136,41 +207,35 @@ export default function UserDashboardPage() {
           return;
         }
 
-        // Check session token
         if (!data.session_token || data.session_token !== sessionToken) {
           localStorage.clear();
           router.push("/auth/login");
           return;
         }
 
-        // Helper function to get public URL from Supabase storage
         const getFileUrl = (path: string | null) => {
           if (!path) return null;
-          const { data } = supabase.storage
+          const { data: fileData } = supabase.storage
             .from("user-documents")
             .getPublicUrl(path);
-          return data?.publicUrl || null;
+          return fileData?.publicUrl || null;
         };
 
-        // --- Count reserved facilities ---
         const { count: reservedFacilitiesCount } = await supabase
           .from("facility_reservations")
           .select("*", { count: "exact" })
           .eq("user_id", Number(userId));
 
-        // --- Count user cases ---
         const { count: casesCount } = await supabase
           .from("cases")
           .select("*", { count: "exact" })
           .eq("user_id", Number(userId));
 
-        // --- Count compliance records ---
         const { count: compliancesCount } = await supabase
           .from("compliance_records")
           .select("*", { count: "exact" })
           .eq("user_id", Number(userId));
 
-        // --- Fetch activity data ---
         const { data: recentCases } = await supabase
           .from("cases")
           .select("filed_date")
@@ -192,16 +257,15 @@ export default function UserDashboardPage() {
           .order("due_date", { ascending: true })
           .limit(30);
 
-        // --- Transform activity data into chart format ---
-        const activityData: any[] = [];
-        const casesArray = recentCases || [];
-        const facilitiesArray = recentFacilities || [];
-        const compliancesArray = recentCompliances || [];
+        const activityData: ActivityRecord[] = [];
+        const casesArray: CaseRecord[] = recentCases || [];
+        const facilitiesArray: FacilityReservation[] = recentFacilities || [];
+        const compliancesArray: ComplianceRecord[] = recentCompliances || [];
 
         const dates = new Set<string>();
-        casesArray.forEach((c: any) => dates.add(c.filed_date));
-        facilitiesArray.forEach((f: any) => dates.add(f.reserved_at));
-        compliancesArray.forEach((c: any) => dates.add(c.due_date));
+        casesArray.forEach((c) => dates.add(c.filed_date));
+        facilitiesArray.forEach((f) => dates.add(f.reservation_date));
+        compliancesArray.forEach((c) => dates.add(c.due_date));
 
         const sortedDates = Array.from(dates).sort(
           (a, b) => new Date(a).getTime() - new Date(b).getTime()
@@ -211,17 +275,15 @@ export default function UserDashboardPage() {
           activityData.push({
             date: new Date(date).toLocaleDateString(),
             facilities: facilitiesArray.filter(
-              (f: any) => f.reserved_at === date
+              (f) => f.reservation_date === date
             ).length,
-            cases: casesArray.filter((c: any) => c.filed_date === date).length,
-            compliances: compliancesArray.filter(
-              (c: any) => c.due_date === date
-            ).length,
+            cases: casesArray.filter((c) => c.filed_date === date).length,
+            compliances: compliancesArray.filter((c) => c.due_date === date)
+              .length,
           });
         });
 
-        // --- Flatten approved_by info and add public URLs for uploaded documents ---
-        const userDataWithAdminAndDocs = {
+        const userDataWithAdminAndDocs: User = {
           ...data,
           approved_by_name: data.approved_by?.name || null,
           visa_image_url: getFileUrl(data.visa_image_url),
@@ -255,22 +317,22 @@ export default function UserDashboardPage() {
       if (!userId) return;
 
       try {
-        const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+        const today = new Date().toISOString().split("T")[0];
 
         const { data, error } = await supabase
           .from("facility_reservations")
           .select(`*, facilities (*)`)
           .eq("user_id", Number(userId))
-          .gte("reservation_date", today) // only future/current reservations
+          .gte("reservation_date", today)
           .order("reservation_date", { ascending: true })
-          .limit(1) // ensures only 1 record
-          .maybeSingle(); // <-- SAFE: returns null if no row
+          .limit(1)
+          .maybeSingle();
 
         if (error) {
           console.error("Supabase error:", error);
           setMyReservation(null);
         } else {
-          setMyReservation(data || null);
+          setMyReservation(data as Reservation | null);
         }
       } catch (err) {
         console.error("Error fetching active reservation:", err);
@@ -300,7 +362,6 @@ export default function UserDashboardPage() {
     setConfirmPassword("");
   };
 
-  // Early render while checking auth
   if (checkingAuth) {
     return (
       <div className="flex items-center justify-center min-h-screen text-gray-600">
@@ -703,7 +764,7 @@ export default function UserDashboardPage() {
                 </thead>
                 <tbody>
                   {userData.records?.length ? (
-                    userData.records.map((item: any, idx: number) => (
+                    userData.records.map((item: UserRecord, idx: number) => (
                       <tr key={idx} className="hover:bg-gray-50">
                         <td className="px-4 py-2 border text-center">
                           {idx + 1}

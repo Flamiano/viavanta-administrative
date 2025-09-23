@@ -20,15 +20,37 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import Image from "next/image";
 import supabase from "@/utils/Supabase";
 
+interface Facility {
+  id: number;
+  name: string;
+  category: "VIP" | "Premium" | "Standard";
+  status: "Available" | "Reserved";
+}
+
+interface Reservation {
+  id: number;
+  user_id: number;
+  facility_id: number;
+  reservation_date: string;
+  start_time: string;
+  end_time: string;
+  facilities: Facility;
+}
+
+interface User {
+  id: number;
+  full_name?: string;
+  email?: string;
+}
+
 interface FacilitiesPageProps {
-  userData: any;
+  userData: User | null;
 }
 
 export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
-  const [facilities, setFacilities] = useState<any[]>([]);
-  const [myReservation, setMyReservation] = useState<any>(null);
+  const [facilities, setFacilities] = useState<Facility[]>([]);
+  const [myReservation, setMyReservation] = useState<Reservation | null>(null);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false); // for silent polling
 
   //Filtering
   const [selectedFilter, setSelectedFilter] = useState<
@@ -37,7 +59,9 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
 
   // modal + selection states
   const [showModal, setShowModal] = useState(false);
-  const [selectedFacility, setSelectedFacility] = useState<any>(null);
+  const [selectedFacility, setSelectedFacility] = useState<Facility | null>(
+    null
+  );
   const [selectedTime, setSelectedTime] = useState<string>("");
 
   // generate times 08:00 → 17:00 in 1h steps
@@ -48,14 +72,9 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
 
   // Fetch facilities and user's reservation
   useEffect(() => {
-    let interval: NodeJS.Timer;
-
     const fetchData = async (isRefresh = false) => {
       if (!isRefresh && loading) {
         setLoading(true);
-      }
-      if (isRefresh) {
-        setRefreshing(true);
       }
 
       try {
@@ -64,8 +83,12 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
           .from("facilities")
           .select("*")
           .order("category", { ascending: true });
-        if (facilitiesError) console.error(facilitiesError);
-        setFacilities(facilitiesData || []);
+
+        if (facilitiesError) {
+          console.error(facilitiesError);
+        }
+
+        setFacilities((facilitiesData as Facility[]) || []);
 
         // User reservation
         if (userData?.id) {
@@ -75,9 +98,11 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
               .select(`*, facilities(*)`)
               .eq("user_id", userData.id)
               .limit(1)
-              .maybeSingle();
+              .maybeSingle<Reservation>();
 
-          if (reservationError) console.error(reservationError);
+          if (reservationError) {
+            console.error(reservationError);
+          }
 
           if (reservationData?.facilities?.status === "Reserved") {
             setMyReservation(reservationData);
@@ -86,9 +111,7 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
           }
         }
       } finally {
-        if (isRefresh) {
-          setRefreshing(false);
-        } else {
+        if (!isRefresh) {
           setLoading(false);
         }
       }
@@ -98,13 +121,14 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
     fetchData();
 
     // Poll silently every 5 sec
-    interval = setInterval(() => fetchData(true), 5000);
+    const interval = setInterval(() => fetchData(true), 5000);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData]);
 
   // open modal
-  const handleReserve = (facility: any) => {
+  const handleReserve = (facility: Facility) => {
     if (!userData) return alert("Login required!");
     if (myReservation) return alert("You already have an active reservation!");
     setSelectedFacility(facility);
@@ -188,13 +212,6 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
     },
     { vip: 0, premium: 0, standard: 0 }
   );
-
-  const COLORS = ["#FACC15", "#3B82F6", "#22C55E"];
-  const pieData = [
-    { name: "VIP", value: availableCounts.vip },
-    { name: "Premium", value: availableCounts.premium },
-    { name: "Standard", value: availableCounts.standard },
-  ];
 
   return (
     <>
@@ -510,7 +527,7 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
               {[
                 {
                   label: "All",
-                  value: "All",
+                  value: "All" as const,
                   icon: Filter,
                   color: "text-gray-600",
                   count: facilities.filter((f) => f.status === "Available")
@@ -518,7 +535,7 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
                 },
                 {
                   label: "VIP",
-                  value: "VIP",
+                  value: "VIP" as const,
                   icon: Crown,
                   color: "text-yellow-500",
                   count: facilities.filter(
@@ -527,7 +544,7 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
                 },
                 {
                   label: "Premium",
-                  value: "Premium",
+                  value: "Premium" as const,
                   icon: Star,
                   color: "text-indigo-500",
                   count: facilities.filter(
@@ -536,7 +553,7 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
                 },
                 {
                   label: "Standard",
-                  value: "Standard",
+                  value: "Standard" as const,
                   icon: Car,
                   color: "text-emerald-500",
                   count: facilities.filter(
@@ -546,7 +563,7 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
               ].map(({ label, value, icon: Icon, color, count }) => (
                 <button
                   key={value}
-                  onClick={() => setSelectedFilter(value as any)}
+                  onClick={() => setSelectedFilter(value)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition cursor-pointer whitespace-nowrap snap-start ${
                     selectedFilter === value
                       ? "bg-blue-600 text-white border-blue-600"
@@ -733,11 +750,18 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
                   className="bg-gray-900 text-white rounded-lg shadow overflow-hidden flex flex-col"
                 >
                   {/* Image */}
-                  <img
-                    src={imageSrc}
-                    alt={f.category}
-                    className="w-full h-32 object-cover"
-                  />
+                  <div className="relative w-full h-32">
+                    <Image
+                      src={imageSrc}
+                      alt={f.category}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw,
+                     (max-width: 1200px) 50vw,
+                     25vw"
+                      priority={index === 0} 
+                    />
+                  </div>
 
                   {/* Content */}
                   <div className="p-4 flex flex-col space-y-2">

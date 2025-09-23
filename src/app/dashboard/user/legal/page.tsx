@@ -6,8 +6,15 @@ import { Info, FileText, ShieldCheck, Search } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import supabase from "@/utils/Supabase";
 
+interface UserData {
+  id: number;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+}
+
 interface LegalPageProps {
-  userData: any; // Currently logged-in user or selected client
+  userData: UserData | null;
 }
 
 interface Case {
@@ -39,6 +46,18 @@ interface ComplianceRecord {
   user_full_name?: string;
   created_at: string;
   updated_at: string;
+}
+
+// Raw response types from Supabase
+interface CaseRaw extends Omit<Case, "assigned_admin" | "user_full_name"> {
+  assigned_admin?: { name: string } | null;
+  user?: { first_name: string; last_name: string } | null;
+}
+
+interface ComplianceRaw
+  extends Omit<ComplianceRecord, "admin_name" | "user_full_name"> {
+  admin_id?: { name: string } | null;
+  user?: { first_name: string; last_name: string } | null;
 }
 
 export default function LegalPage({ userData }: LegalPageProps) {
@@ -82,21 +101,23 @@ export default function LegalPage({ userData }: LegalPageProps) {
           .order("due_date", { ascending: true });
 
         // Flatten admin and user objects
-        const flattenedCases = (casesData || []).map((c: any) => ({
-          ...c,
-          assigned_admin: c.assigned_admin?.name || "-",
-          user_full_name: c.user
-            ? `${c.user.first_name} ${c.user.last_name}`
-            : "-",
-        }));
+        const flattenedCases: Case[] =
+          (casesData as CaseRaw[] | null)?.map((c) => ({
+            ...c,
+            assigned_admin: c.assigned_admin?.name || "-",
+            user_full_name: c.user
+              ? `${c.user.first_name} ${c.user.last_name}`
+              : "-",
+          })) || [];
 
-        const flattenedCompliance = (complianceData || []).map((c: any) => ({
-          ...c,
-          admin_name: c.admin_id?.name || "-",
-          user_full_name: c.user
-            ? `${c.user.first_name} ${c.user.last_name}`
-            : "-",
-        }));
+        const flattenedCompliance: ComplianceRecord[] =
+          (complianceData as ComplianceRaw[] | null)?.map((c) => ({
+            ...c,
+            admin_name: c.admin_id?.name || "-",
+            user_full_name: c.user
+              ? `${c.user.first_name} ${c.user.last_name}`
+              : "-",
+          })) || [];
 
         setCases(flattenedCases);
         setComplianceRecords(flattenedCompliance);
@@ -254,17 +275,17 @@ export default function LegalPage({ userData }: LegalPageProps) {
 
       <p className="text-gray-700 text-sm mb-4">
         This page displays all your legal cases and compliance records. You can
-        filter by "Cases" or "Compliance", search by title or number, and view
-        details or download related documents.
+        filter by &quot;Cases&quot; or &quot;Compliance&quot;, search by title
+        or number, and view details or download related documents.
       </p>
 
       {/* Filter + Search */}
       <div className="flex flex-col sm:flex-row justify-between gap-4 items-center">
         <div className="flex gap-2">
-          {["All", "Cases", "Compliance"].map((f) => (
+          {(["All", "Cases", "Compliance"] as const).map((f) => (
             <button
               key={f}
-              onClick={() => setFilter(f as any)}
+              onClick={() => setFilter(f)}
               className={`px-4 py-2 rounded-lg font-semibold transition ${
                 filter === f
                   ? "bg-blue-500 text-white"
