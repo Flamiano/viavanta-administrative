@@ -7,12 +7,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { Info } from "lucide-react";
 
 type DocumentsPageProps = {
-  adminData: {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-  } | null;
+  adminData: { id: number; name: string; email: string; role: string } | null;
 };
 
 type UserDoc = {
