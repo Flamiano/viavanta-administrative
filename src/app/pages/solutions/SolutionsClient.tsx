@@ -462,7 +462,7 @@ export default function SolutionsClient() {
       </section>
 
       {/* Transportation Facilities */}
-      <section className="bg-white/79 py-16 overflow-hidden">
+      <section className="bg-white py-16 overflow-hidden">
         <div className="max-w-7xl mx-auto text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
             Our Transport Facilities
@@ -478,15 +478,18 @@ export default function SolutionsClient() {
             {[...carFacilities, ...carFacilities].map((car, index) => (
               <div
                 key={index}
-                className="min-w-[300px] bg-gray-50 rounded-xl shadow hover:shadow-lg transition overflow-hidden"
+                className="min-w-[300px] border-1 border-black rounded-xl shadow hover:shadow-lg transition overflow-hidden"
               >
-                <Image
-                  src={car.src}
-                  alt={car.title}
-                  width={300}
-                  height={192}
-                  className="w-full h-48 object-cover"
-                />
+                <div className="relative w-full h-48">
+                  <Image
+                    src={car.src}
+                    alt={car.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 300px"
+                  />
+                </div>
+
                 <div className="p-4 text-left">
                   <h3 className="text-lg font-semibold text-gray-800">
                     {car.title}
@@ -587,7 +590,7 @@ export default function SolutionsClient() {
       </section>
 
       {/* Legal Section */}
-      <section className="bg-white/79 py-16 px-4 md:px-8">
+      <section className="bg-white py-16 px-4 md:px-8">
         <div className="max-w-7xl mx-auto text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
             Legal & Compliance
@@ -612,6 +615,7 @@ export default function SolutionsClient() {
                   alt={item.title}
                   fill
                   className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
               </div>
               <div className="p-6 text-left">
@@ -641,7 +645,8 @@ export default function SolutionsClient() {
                     alt={item.title}
                     fill
                     className="object-cover"
-                    priority={i === 0 && offset === 0} // prioritize loading the first one
+                    priority={i === 0 && offset === 0}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                   <div className="absolute inset-0 bg-black/60 bg-opacity-50 flex flex-col items-center justify-center text-center px-6">
                     <h3 className="text-white font-extrabold text-3xl mb-4">

@@ -1,28 +1,37 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Navbar from "@/comps/Navbar";
 import Footer from "@/comps/Footer";
 import Image from "next/image";
+import Link from "next/link";
 import {
-  FaGoogle,
-  FaFacebook,
-  FaGithub,
-  FaYoutube,
-  FaSlack,
-  FaBolt,
+  FaBuilding,
+  FaFileAlt,
+  FaGavel,
+  FaUserCheck,
+  FaClipboardList,
+  FaArchive,
+  FaUsers,
+  FaCalendarCheck,
+  FaIdBadge,
+  FaTasks,
 } from "react-icons/fa";
 import { CalendarCheck, FolderSearch, Scale, BadgeCheck } from "lucide-react";
-import InfiniteMenu from "@/comps/reactbits/InifiniteMenu";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const icons = [
-    <FaGoogle key="google" />,
-    <FaFacebook key="facebook" />,
-    <FaGithub key="github" />,
-    <FaYoutube key="youtube" />,
-    <FaSlack key="slack" />,
-    <FaBolt key="bolt" />,
+    <FaBuilding key="building" />,
+    <FaFileAlt key="file" />,
+    <FaGavel key="gavel" />,
+    <FaUserCheck key="visitor" />,
+    <FaClipboardList key="clipboard" />,
+    <FaArchive key="archive" />,
+    <FaUsers key="users" />,
+    <FaCalendarCheck key="calendar" />,
+    <FaIdBadge key="idbadge" />,
+    <FaTasks key="tasks" />,
   ];
 
   const items = [
@@ -98,6 +107,15 @@ export default function Home() {
     },
   ];
 
+  const [currentIndex, setCurrentIndex] = useState(0);
+  // Auto-slide every 4 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % items.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [items.length]);
+
   // Animation Framer Variants
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },
@@ -115,7 +133,7 @@ export default function Home() {
   };
 
   return (
-    <div className="font-body flex flex-col min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white overflow-hidden">
+    <div className="font-body flex flex-col min-h-screen bg-white text-black overflow-hidden">
       <Navbar />
 
       {/* Hero Section */}
@@ -129,33 +147,26 @@ export default function Home() {
           variants={slideLeft}
         >
           <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tight">
-            Welcome to{" "}
-            <span className="text-blue-600 dark:text-blue-400">
-              Administrative
-            </span>
+            Welcome to <span className="text-blue-600">Administrative</span>
           </h1>
         </motion.div>
 
         {/* Fade In Paragraphs */}
         <motion.div
-          className="max-w-4xl"
+          className="max-w-4xl mb-5"
           initial="hidden"
           animate="visible"
           transition={{ duration: 1, delay: 0.2 }}
           variants={fadeInUp}
         >
-          <p className="mt-4 text-md sm:text-lg text-gray-600 dark:text-gray-300">
-            A platform designed to streamline and simplify the way you manage
-            your travel and tour operations.
+          <p className="text-md sm:text-lg text-gray-900">
+            Your all-in-one control center for managing travel and tour
+            operations.
           </p>
-          <p className="mt-2 text-sm sm:text-lg text-gray-500 dark:text-gray-400">
-            From scheduling and resource tracking to real-time analytics and
-            customer engagement, ViaVanta empowers administrators with
-            intelligent tools for better decision-making.
-          </p>
-          <p className="mt-2 text-sm sm:text-lg text-gray-500 dark:text-gray-400">
-            Secure, fast, and built for scale — your digital command center is
-            here.
+          <p className="mt-2 text-sm sm:text-lg text-gray-500">
+            From scheduling facility reservations, organizing documents, and
+            handling legal records, to monitoring visitors. Simple, secure, and
+            efficient - everything an admin needs in one place.
           </p>
         </motion.div>
 
@@ -167,23 +178,24 @@ export default function Home() {
           transition={{ duration: 1, delay: 0.4 }}
           variants={slideRight}
         >
-          <a
-            href="#"
+          <Link
+            href="/auth/login"
             className="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-full shadow"
           >
             Get Started
-          </a>
-          <a
-            href="#"
-            className="flex-1 text-center border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 font-semibold px-6 py-3 rounded-full shadow"
+          </Link>
+          <Link
+            href="/pages/solutions"
+            className="flex-1 text-center border border-gray-900  text-gray-800 hover:bg-gray-900 hover:text-white font-semibold 
+             px-6 py-3 rounded-full shadow"
           >
             Learn More
-          </a>
+          </Link>
         </motion.div>
       </section>
 
       {/* Background Video Section */}
-      <section className="relative h-[300px] w-full overflow-hidden">
+      <section className="relative h-[800px] w-full overflow-hidden">
         <video
           className="absolute top-0 left-0 w-full h-full object-cover"
           src="/videos/1000005256.mp4"
@@ -200,7 +212,7 @@ export default function Home() {
       </section>
 
       {/* Module Section */}
-      <section className="bg-blue-950 text-white py-16">
+      <section className=" bg-gray-900 text-white py-16">
         <div className="container mx-auto px-6 text-center">
           <motion.h2
             className="text-3xl sm:text-4xl font-bold mb-6"
@@ -210,7 +222,7 @@ export default function Home() {
             transition={{ duration: 1 }}
             variants={fadeInUp}
           >
-            <span className="text-blue-400">Administrative</span> Module
+            <span className="text-blue-600">Administrative</span> Module
           </motion.h2>
 
           <motion.p
@@ -229,7 +241,7 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Facilities Reservation */}
             <motion.div
-              className="bg-blue-900 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all"
+              className="bg-blue-700 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
@@ -239,7 +251,7 @@ export default function Home() {
               <div className="text-blue-400 text-4xl mb-4 flex justify-center">
                 <CalendarCheck
                   size={40}
-                  className="text-blue-400 mb-4 mx-auto"
+                  className="text-blue-200 mb-4 mx-auto"
                 />
               </div>
               <h3 className="text-xl font-semibold mb-2">
@@ -253,7 +265,7 @@ export default function Home() {
 
             {/* Document Management */}
             <motion.div
-              className="bg-blue-900 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all"
+              className="bg-blue-700 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
@@ -263,7 +275,7 @@ export default function Home() {
               <div className="text-blue-400 text-4xl mb-4 flex justify-center">
                 <FolderSearch
                   size={40}
-                  className="text-blue-400 mb-4 mx-auto"
+                  className="text-blue-300 mb-4 mx-auto"
                 />
               </div>
               <h3 className="text-xl font-semibold mb-2">
@@ -277,7 +289,7 @@ export default function Home() {
 
             {/* Legal Management */}
             <motion.div
-              className="bg-blue-900 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all"
+              className="bg-blue-700 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
@@ -285,7 +297,7 @@ export default function Home() {
               variants={slideRight}
             >
               <div className="text-blue-400 text-4xl mb-4 flex justify-center">
-                <Scale size={40} className="text-blue-400 mb-4 mx-auto" />
+                <Scale size={40} className="text-blue-300 mb-4 mx-auto" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Legal Management</h3>
               <p className="text-gray-300 text-sm">
@@ -296,7 +308,7 @@ export default function Home() {
 
             {/* Visitor Management */}
             <motion.div
-              className="bg-blue-900 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all"
+              className="bg-blue-700 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
@@ -304,7 +316,7 @@ export default function Home() {
               variants={slideLeft}
             >
               <div className="text-blue-400 text-4xl mb-4 flex justify-center">
-                <BadgeCheck size={40} className="text-blue-400 mb-4 mx-auto" />
+                <BadgeCheck size={40} className="text-blue-30 mb-4 mx-auto" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Visitor Management</h3>
               <p className="text-gray-300 text-sm">
@@ -330,7 +342,7 @@ export default function Home() {
             <h2 className="text-4xl font-bold mb-4">
               Exclusive Condo Facilities Reservation
             </h2>
-            <p className="text-lg text-gray-300">
+            <p className="text-lg text-gray-700">
               Discover comfort and convenience with our premium condo
               accommodations—available exclusively for ViaVanta Administrative
               Travel and Tours clients. Ideal for executives, guests, and
@@ -354,6 +366,7 @@ export default function Home() {
               fill
               priority
               className="object-cover w-full h-full"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </motion.div>
         </div>
@@ -361,7 +374,7 @@ export default function Home() {
 
       {/* Document Management Section */}
       <motion.section
-        className="py-20 bg-white dark:bg-gray-950"
+        className="py-20 bg-white"
         variants={fadeInUp}
         initial="hidden"
         whileInView="visible"
@@ -379,20 +392,21 @@ export default function Home() {
               fill
               priority
               className="object-cover w-full h-full"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </motion.div>
 
           {/* Text Content on the Right */}
           <motion.div variants={slideRight}>
-            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+            <h2 className="text-4xl font-bold mb-4 text-gray-900">
               Streamlined Document Management
             </h2>
-            <p className="text-lg text-gray-700 dark:text-gray-300">
+            <p className="text-lg text-gray-700 ">
               Organize, access, and manage important administrative files with
               ease. Our Document Management system ensures that your records are
               secure, searchable, and readily available.
             </p>
-            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-4 text-sm text-gray-600">
               Eliminate the hassle of paperwork and enjoy the efficiency of
               digitized records at your fingertips.
             </p>
@@ -402,7 +416,7 @@ export default function Home() {
 
       {/* Legal Management Section */}
       <motion.section
-        className="py-20 bg-white dark:bg-gray-950"
+        className="py-20 bg-gray-900"
         variants={fadeInUp}
         initial="hidden"
         whileInView="visible"
@@ -411,15 +425,15 @@ export default function Home() {
         <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           {/* Text Content on the Left */}
           <motion.div variants={slideLeft}>
-            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+            <h2 className="text-4xl font-bold mb-4 text-white">
               Comprehensive Legal Management
             </h2>
-            <p className="text-lg text-gray-700 dark:text-gray-300">
+            <p className="text-lg text-gray-300">
               Stay compliant and protected with our Legal Management system. We
               ensure that all administrative operations follow regulatory
               standards while maintaining transparency and accountability.
             </p>
-            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-4 text-sm text-gray-400">
               From contracts to legal documents, everything is organized,
               secure, and easily accessible.
             </p>
@@ -436,6 +450,7 @@ export default function Home() {
               fill
               priority
               className="object-cover w-full h-full"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </motion.div>
         </div>
@@ -443,7 +458,7 @@ export default function Home() {
 
       {/* Visitor Management Section */}
       <motion.section
-        className="py-20 bg-white dark:bg-gray-950"
+        className="py-20 bg-gray-900"
         variants={fadeInUp}
         initial="hidden"
         whileInView="visible"
@@ -460,22 +475,23 @@ export default function Home() {
               alt="Visitor Management System"
               fill
               priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover w-full h-full"
             />
           </motion.div>
 
           {/* Text Content on the Right */}
           <motion.div variants={slideRight}>
-            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+            <h2 className="text-4xl font-bold mb-4 text-white">
               Smart Visitor Management
             </h2>
-            <p className="text-lg text-gray-700 dark:text-gray-300">
+            <p className="text-lg text-gray-300">
               Track, manage, and welcome your guests with efficiency. Our
               Visitor Management system offers secure check-in processes,
               real-time logs, and visitor history to ensure a safe and organized
               environment.
             </p>
-            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-4 text-sm text-gray-400">
               Empower your front desk with digital tools that streamline visitor
               handling and boost your professional image.
             </p>
@@ -484,129 +500,129 @@ export default function Home() {
       </motion.section>
 
       {/* Features Section */}
-      <section className="bg-blue-800 py-20 text-white">
+      <section className="py-20 bg-white text-black">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-            Why <span className="text-blue-300">Choose ViaVanta?</span>
+            Why <span className="text-blue-700">Choose ViaVanta?</span>
           </h2>
-          <p className="text-gray-200 mb-12 max-w-2xl mx-auto">
+          <p className="text-gray-600 mb-12 max-w-2xl mx-auto">
             ViaVanta is your trusted digital partner for modernizing
             administrative processes with speed, transparency, and intelligent
             design.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-            {/* Feature 1 - Slide Left */}
+            {/* Feature 1 */}
             <motion.div
               variants={slideLeft}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg"
+              className="bg-blue-700 text-white p-6 rounded-2xl shadow-md hover:shadow-xl"
             >
-              <div className="text-blue-300 text-4xl mb-4 flex justify-center">
+              <div className="text-blue-200 text-4xl mb-4 flex justify-center">
                 <i className="lucide lucide-shield-check" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Secure by Design</h3>
-              <p className="text-gray-200 text-sm">
+              <p className="text-blue-100 text-sm">
                 Data encryption, role-based access, and audit logs ensure
                 sensitive data stays protected 24/7.
               </p>
             </motion.div>
 
-            {/* Feature 2 - Fade In Up */}
+            {/* Feature 2 */}
             <motion.div
               variants={fadeInUp}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg"
+              className="bg-blue-700 text-white p-6 rounded-2xl shadow-md hover:shadow-xl"
             >
-              <div className="text-blue-300 text-4xl mb-4 flex justify-center">
+              <div className="text-blue-200 text-4xl mb-4 flex justify-center">
                 <i className="lucide lucide-layout-dashboard" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Unified Dashboard</h3>
-              <p className="text-gray-200 text-sm">
+              <p className="text-blue-100 text-sm">
                 View, manage, and act on critical modules from one intuitive
                 dashboard interface.
               </p>
             </motion.div>
 
-            {/* Feature 3 - Slide Right */}
+            {/* Feature 3 */}
             <motion.div
               variants={slideRight}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg"
+              className="bg-blue-700 text-white p-6 rounded-2xl shadow-md hover:shadow-xl"
             >
-              <div className="text-blue-300 text-4xl mb-4 flex justify-center">
+              <div className="text-blue-200 text-4xl mb-4 flex justify-center">
                 <i className="lucide lucide-bolt" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Fast & Responsive</h3>
-              <p className="text-gray-200 text-sm">
+              <p className="text-blue-100 text-sm">
                 Optimized for both desktop and mobile, ViaVanta responds fast no
                 matter the device.
               </p>
             </motion.div>
 
-            {/* Feature 4 - Slide Left */}
+            {/* Feature 4 */}
             <motion.div
               variants={slideLeft}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg"
+              className="bg-blue-700 text-white p-6 rounded-2xl shadow-md hover:shadow-xl"
             >
-              <div className="text-blue-300 text-4xl mb-4 flex justify-center">
+              <div className="text-blue-200 text-4xl mb-4 flex justify-center">
                 <i className="lucide lucide-settings" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Customizable Tools</h3>
-              <p className="text-gray-200 text-sm">
+              <p className="text-blue-100 text-sm">
                 Tailor features and modules to fit your organization’s workflow
                 and policies.
               </p>
             </motion.div>
 
-            {/* Feature 5 - Fade In Up */}
+            {/* Feature 5 */}
             <motion.div
               variants={fadeInUp}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg"
+              className="bg-blue-700 text-white p-6 rounded-2xl shadow-md hover:shadow-xl"
             >
-              <div className="text-blue-300 text-4xl mb-4 flex justify-center">
+              <div className="text-blue-200 text-4xl mb-4 flex justify-center">
                 <i className="lucide lucide-users" />
               </div>
               <h3 className="text-xl font-semibold mb-2">
                 User-Centric Design
               </h3>
-              <p className="text-gray-200 text-sm">
+              <p className="text-blue-100 text-sm">
                 Built with users in mind — clean UI, smooth navigation, and
                 accessible design for all.
               </p>
             </motion.div>
 
-            {/* Feature 6 - Slide Right */}
+            {/* Feature 6 */}
             <motion.div
               variants={slideRight}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="bg-blue-900 p-6 rounded-2xl shadow-md hover:shadow-lg"
+              className="bg-blue-700 text-white p-6 rounded-2xl shadow-md hover:shadow-xl"
             >
-              <div className="text-blue-300 text-4xl mb-4 flex justify-center">
+              <div className="text-blue-200 text-4xl mb-4 flex justify-center">
                 <i className="lucide lucide-cloud-check" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Cloud-Based Access</h3>
-              <p className="text-gray-200 text-sm">
+              <p className="text-blue-100 text-sm">
                 Manage operations from anywhere — all you need is a device and
                 internet connection.
               </p>
@@ -615,10 +631,53 @@ export default function Home() {
         </div>
       </section>
 
-      {/* InfiniteMenu Images 1-10 */}
-      <section className="w-full">
-        <div className="w-full h-[600px] md:h-[700px] lg:h-[800px] relative">
-          <InfiniteMenu items={items} />
+      {/* Carousel Image Section */}
+      <section className="w-full relative h-[300px] md:h-[400px] lg:h-500px] overflow-hidden">
+        <AnimatePresence>
+          <motion.div
+            key={currentIndex}
+            className="absolute inset-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            {/* Background Image */}
+            <Image
+              src={items[currentIndex].image}
+              alt={items[currentIndex].title}
+              fill
+              sizes="100vw"
+              className="object-cover"
+              priority
+            />
+
+            {/* Dark overlay */}
+            <div className="absolute inset-0 bg-black/40"></div>
+
+            {/* Text overlay */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+              <h2 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">
+                {items[currentIndex].title}
+              </h2>
+              <p className="mt-4 text-lg md:text-xl text-white max-w-2xl drop-shadow-md">
+                {items[currentIndex].description}
+              </p>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Progress dots */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+          {items.map((_, index) => (
+            <button
+              key={index}
+              className={`w-3 h-3 rounded-full transition-all ${
+                index === currentIndex ? "bg-white scale-125" : "bg-gray-400"
+              }`}
+              onClick={() => setCurrentIndex(index)}
+            ></button>
+          ))}
         </div>
       </section>
 
@@ -626,7 +685,7 @@ export default function Home() {
       <section className="py-12 overflow-hidden">
         <div className="relative w-full overflow-hidden">
           <div
-            className="flex text-white text-7xl whitespace-nowrap animate-[marquee_15s_linear_infinite]"
+            className="flex text-black text-7xl whitespace-nowrap animate-[marquee_15s_linear_infinite]"
             style={{ width: "max-content" }}
           >
             {Array(6)

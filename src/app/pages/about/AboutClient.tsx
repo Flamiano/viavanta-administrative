@@ -275,7 +275,7 @@ export default function AboutClient() {
       </section>
 
       {/* Features Section */}
-      <section className="bg-gray-100 dark:bg-gray-900 py-16 px-6">
+      <section className="bg-white text-black py-16 px-6">
         <motion.div
           className="max-w-5xl mx-auto text-center"
           initial="hidden"
@@ -294,7 +294,7 @@ export default function AboutClient() {
                 <h3 className="text-xl font-semibold mb-1">
                   Facility Reservation
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600">
                   Reserve rooms and equipment in real-time with automatic
                   conflict detection and reminders.
                 </p>
@@ -308,7 +308,7 @@ export default function AboutClient() {
                 <h3 className="text-xl font-semibold mb-1">
                   Document Archiving
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 ">
                   Secure upload, organization, and retrieval of important files
                   with built-in expiration rules.
                 </p>
@@ -322,7 +322,7 @@ export default function AboutClient() {
                 <h3 className="text-xl font-semibold mb-1">
                   Legal File Management
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 ">
                   Ensure compliance and traceability with version tracking,
                   role-based access, and review workflows.
                 </p>
@@ -334,7 +334,7 @@ export default function AboutClient() {
               <LogIn className="text-red-600 w-7 h-7 mt-1" />
               <div>
                 <h3 className="text-xl font-semibold mb-1">Visitor Logging</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600">
                   Real-time visitor registration and historical reports to
                   improve security and planning.
                 </p>
@@ -436,15 +436,15 @@ export default function AboutClient() {
               className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl p-6"
             >
               <h2 className="text-xl font-bold text-white mb-4">
-                Technology Stack
+                Key Features
               </h2>
               <ul className="space-y-2 text-sm text-white/80">
-                <li>✓ Cloud-Native Infrastructure</li>
-                <li>✓ Encrypted Data Storage</li>
-                <li>✓ API-First Architecture</li>
-                <li>✓ Cross-Platform Compatibility</li>
-                <li>✓ Real-time Notifications</li>
-                <li>✓ Role-Based Access Control</li>
+                <li>✓ Easy Facilities Reservation</li>
+                <li>✓ Secure Document Management</li>
+                <li>✓ Organized Legal Records</li>
+                <li>✓ Visitor Tracking & Monitoring</li>
+                <li>✓ Real-time Updates</li>
+                <li>✓ Role-Based Admin Access</li>
               </ul>
             </motion.div>
           </div>
@@ -477,7 +477,7 @@ export default function AboutClient() {
             {/* Member 1 */}
             <div className="flex flex-col items-center text-center max-w-[250px] w-full">
               <Image
-                src="/assets/1.jpg"
+                src="/team/roel.jpg"
                 alt="John Roel R.Flamiano"
                 width={140}
                 height={140}
@@ -490,7 +490,7 @@ export default function AboutClient() {
             {/* Member 2 */}
             <div className="flex flex-col items-center text-center max-w-[250px] w-full">
               <Image
-                src="/assets/1.jpg"
+                src="/team/jaymark.jpg"
                 alt="Jaymark N. Dadivas"
                 width={140}
                 height={140}
@@ -512,7 +512,7 @@ export default function AboutClient() {
             {/* Member 3 */}
             <div className="flex flex-col items-center text-center max-w-[250px] w-full">
               <Image
-                src="/assets/1.jpg"
+                src="/team/jomar.jpg"
                 alt="Jomar C. Barte"
                 width={140}
                 height={140}
@@ -525,27 +525,27 @@ export default function AboutClient() {
             {/* Member 4 */}
             <div className="flex flex-col items-center text-center max-w-[250px] w-full">
               <Image
-                src="/assets/1.jpg"
+                src="/team/russel.jpg"
                 alt="Russel M. Realto"
                 width={140}
                 height={140}
                 className="rounded-full mb-4 object-cover w-[120px] h-[120px] sm:w-[140px] sm:h-[140px]"
               />
               <h3 className="text-xl font-semibold">Russel M. Realto</h3>
-              <p className="text-sm text-gray-300">Señorito</p>
+              <p className="text-sm text-gray-300">Documentation Support</p>
             </div>
 
             {/* Member 5 */}
             <div className="flex flex-col items-center text-center max-w-[250px] w-full">
               <Image
-                src="/assets/1.jpg"
+                src="/team/bianca.jpg"
                 alt="Bianca Mae D. Cañaveral"
                 width={140}
                 height={140}
                 className="rounded-full mb-4 object-cover w-[120px] h-[120px] sm:w-[140px] sm:h-[140px]"
               />
               <h3 className="text-xl font-semibold">Bianca Mae D. Cañaveral</h3>
-              <p className="text-sm text-gray-300">Documentation & Support</p>
+              <p className="text-sm text-gray-300">Documentation Writer</p>
             </div>
           </motion.div>
         </motion.div>

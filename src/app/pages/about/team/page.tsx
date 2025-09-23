@@ -159,10 +159,12 @@ export default function TeamPage() {
             <TeamMember
               name="John Roel R. Flamiano"
               role="Team Leader & Developer"
+              image="/team/roel.jpg"
             />
             <TeamMember
               name="Jaymark N. Dadivas"
               role="System QA / Programmer Support"
+              image="/team/jaymark.jpg"
             />
           </motion.div>
 
@@ -172,11 +174,20 @@ export default function TeamPage() {
             variants={slideRight}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <TeamMember name="Jomar C. Barte" role="UI/UX Designer" />
-            <TeamMember name="Russel M. Realto" role="Señorito" />
+            <TeamMember
+              name="Jomar C. Barte"
+              role="UI/UX Designer"
+              image="/team/jomar.jpg"
+            />
+            <TeamMember
+              name="Russel M. Realto"
+              role="Documentation Support"
+              image="/team/russel.jpg"
+            />
             <TeamMember
               name="Bianca Mae D. Cañaveral"
-              role="Documentation & Support"
+              role="Documentation Writer"
+              image="/team/bianca.jpg"
             />
           </motion.div>
         </motion.div>
@@ -187,11 +198,19 @@ export default function TeamPage() {
   );
 }
 
-function TeamMember({ name, role }: { name: string; role: string }) {
+function TeamMember({
+  name,
+  role,
+  image,
+}: {
+  name: string;
+  role: string;
+  image: string;
+}) {
   return (
     <div className="flex flex-col items-center text-center max-w-[250px] w-full">
       <Image
-        src="/assets/1.jpg"
+        src={image}
         alt={name}
         width={140}
         height={140}

@@ -1,11 +1,12 @@
 "use client";
 
 import Navbar from "@/comps/Navbar";
-import { useState } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Footer from "@/comps/Footer";
-import Threads from "@/comps/reactbits/Threads";
+import DarkVeil from "@/comps/reactbits/DarkVeil";
+import { Users } from "lucide-react";
 
 // Animations
 const fadeInUp = {
@@ -119,8 +120,52 @@ export default function ContactClient() {
     setActiveId((prev) => (prev === id ? null : id));
   };
 
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!formData.name || !formData.email || !formData.message) {
+      setError("All fields are required.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Something went wrong.");
+      } else {
+        setSuccess("Your inquiry has been sent successfully!");
+        setFormData({ name: "", email: "", message: "" });
+      }
+    } catch (err) {
+      setError("Failed to send. Please try again.");
+    }
+  };
+
   return (
-    <div className="font-body flex flex-col min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white overflow-hidden">
+    <div className="font-body flex flex-col min-h-screen text-gray-900 dark:text-white overflow-hidden">
       <Navbar />
 
       {/* Contact Hero Section */}
@@ -180,72 +225,68 @@ export default function ContactClient() {
         </div>
       </section>
 
+      {/* FAQ Section */}
       <section className="py-16 bg-gray-900">
-        <div className="rounded-2xl shadow-xl p-8 sm:p-10 max-w-4xl mx-auto">
+        <div className="rounded-2xl shadow-xl p-8 sm:p-10 max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-white mb-12">
             Frequently Asked Questions
           </h2>
 
-          {faqGroups.map((group, groupIndex) => (
-            <div key={groupIndex} className="mb-10">
-              <h3 className="text-2xl font-semibold text-blue-400 mb-4">
-                {group.title}
-              </h3>
-              <div className="space-y-4">
-                {group.items.map((item, itemIndex) => {
-                  const id = `${groupIndex}-${itemIndex}`;
-                  const isOpen = activeId === id;
+          <div className="grid md:grid-cols-2 gap-8">
+            {faqGroups.map((group, groupIndex) => (
+              <div key={groupIndex}>
+                <h3 className="text-2xl font-semibold text-blue-400 mb-4">
+                  {group.title}
+                </h3>
+                <div className="space-y-4">
+                  {group.items.map((item, itemIndex) => {
+                    const id = `${groupIndex}-${itemIndex}`;
+                    const isOpen = activeId === id;
 
-                  return (
-                    <div
-                      key={id}
-                      className={`border rounded-xl transition-all duration-300 overflow-hidden ${
-                        isOpen
-                          ? "border-blue-500 shadow-md"
-                          : "border-gray-200 hover:border-blue-300"
-                      }`}
-                    >
-                      <button
-                        onClick={() => toggle(id)}
-                        className="flex justify-between items-center w-full p-5 text-left bg-gray-800 rounded-xl"
+                    return (
+                      <div
+                        key={id}
+                        className={`border rounded-xl overflow-hidden transition-colors duration-300 ${
+                          isOpen
+                            ? "border-blue-500 shadow-md"
+                            : "border-gray-200 hover:border-blue-300"
+                        }`}
                       >
-                        <span className="text-white font-medium">
-                          {item.question}
-                        </span>
-                        <motion.span
-                          animate={{ rotate: isOpen ? 180 : 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="text-gray-400"
+                        <button
+                          onClick={() => toggle(id)}
+                          className="flex justify-between items-center w-full p-5 text-left bg-gray-800"
                         >
-                          ▼
-                        </motion.span>
-                      </button>
-
-                      <AnimatePresence initial={false}>
-                        {isOpen && (
-                          <motion.div
-                            key="content"
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="px-5 pb-4 text-gray-300"
+                          <span className="text-white font-medium">
+                            {item.question}
+                          </span>
+                          <span
+                            className={`text-gray-400 transform transition-transform duration-300 ${
+                              isOpen ? "rotate-180" : ""
+                            }`}
                           >
-                            {item.answer}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  );
-                })}
+                            ▼
+                          </span>
+                        </button>
+
+                        <div
+                          className={`px-5 text-gray-300 overflow-hidden transition-all duration-300 ease-in-out ${
+                            isOpen ? "max-h-40 py-4" : "max-h-0 py-0"
+                          }`}
+                        >
+                          {item.answer}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Info Section */}
-      <section className="bg-blue-800 text-white py-20 px-6 text-center mb-0">
+      <section className=" bg-white text-black py-20 px-6 text-center mb-0">
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -257,7 +298,7 @@ export default function ContactClient() {
           <h2 className="text-xl md:text-2xl font-semibold mb-2">
             Need Assistance?
           </h2>
-          <p className="text-sm md:text-base text-gray-300">
+          <p className="text-sm md:text-base text-gray-500">
             Our team is here to help you with any inquiries regarding our
             administrative system. Feel free to reach out to us for support,
             suggestions, or clarifications.
@@ -266,24 +307,30 @@ export default function ContactClient() {
       </section>
 
       {/* Contact Form */}
-      <section className="relative w-full h-[700px] text-black bg-white/79 mb-0 md:mb-8 lg:mb-15">
-        <Threads amplitude={1} distance={0} enableMouseInteraction={true} />
+      <section className="relative w-full h-[700px] text-white mb-0 md:mb-8 lg:mb-15">
+        <div className="absolute inset-0 z-0">
+          <DarkVeil />
+        </div>
+
         <motion.div
-          className="absolute inset-0 flex items-center justify-center px-4"
+          className="absolute inset-0 flex items-center justify-center px-4 z-10"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           transition={{ duration: 1 }}
           variants={fadeInUp}
         >
-          <div className="w-full max-w-5xl border border-black rounded-xl p-6 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="w-full max-w-5xl border border-white rounded-xl p-6 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div>
               <h2 className="text-2xl font-bold mb-2">Get in Touch</h2>
-              <p className="mb-4 text-gray-500 text-sm leading-relaxed">
+              <p className="mb-4 text-gray-400 text-sm leading-relaxed">
                 For questions, clarifications, or feedback about our
                 administrative system, please fill out the form below.
               </p>
-              <form className="space-y-3">
+              <form onSubmit={handleSubmit} className="space-y-3">
+                {error && <p className="text-red-500 text-sm">{error}</p>}
+                {success && <p className="text-green-500 text-sm">{success}</p>}
+
                 <div>
                   <label
                     htmlFor="name"
@@ -294,11 +341,14 @@ export default function ContactClient() {
                   <input
                     type="text"
                     id="name"
+                    value={formData.name}
+                    onChange={handleChange}
                     className="w-full rounded-md bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     placeholder="Enter your name"
                     required
                   />
                 </div>
+
                 <div>
                   <label
                     htmlFor="email"
@@ -309,11 +359,14 @@ export default function ContactClient() {
                   <input
                     type="email"
                     id="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     className="w-full rounded-md bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     placeholder="you@example.com"
                     required
                   />
                 </div>
+
                 <div>
                   <label
                     htmlFor="message"
@@ -324,11 +377,14 @@ export default function ContactClient() {
                   <textarea
                     id="message"
                     rows={3}
+                    value={formData.message}
+                    onChange={handleChange}
                     className="w-full rounded-md bg-gray-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     placeholder="Write your message here..."
                     required
-                  ></textarea>
+                  />
                 </div>
+
                 <button
                   type="submit"
                   className="bg-blue-700 hover:bg-blue-800 transition px-5 py-2 rounded-md text-sm font-semibold"
@@ -356,6 +412,62 @@ export default function ContactClient() {
             </motion.div>
           </div>
         </motion.div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 bg-white text-black">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-12">
+            What Our <span className="text-blue-700">Users Say</span>
+          </h2>
+
+          {(() => {
+            const testimonials = [
+              {
+                name: "Anna D.",
+                role: "HR Manager",
+                feedback:
+                  "Reaching out to ViaVanta’s support team is always quick and easy. Responses are clear, friendly, and incredibly helpful.",
+              },
+              {
+                name: "Michael S.",
+                role: "Legal Officer",
+                feedback:
+                  "The contact system is seamless — I can send inquiries anytime and get updates fast. It makes collaboration so much smoother.",
+              },
+              {
+                name: "Sarah L.",
+                role: "Project Coordinator",
+                feedback:
+                  "Submitting questions through the contact form was effortless. I appreciated how professional and prompt the feedback was.",
+              },
+              {
+                name: "James R.",
+                role: "Operations Lead",
+                feedback:
+                  "I value how accessible ViaVanta’s team is. Whether it’s clarifications or technical issues, I know I’ll get a reliable response.",
+              },
+            ];
+
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {testimonials.map((t, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-50 border border-gray-200 p-6 rounded-xl shadow-md hover:shadow-lg transition"
+                  >
+                    <div className="flex justify-center mb-4">
+                      <Users className="text-blue-600 w-8 h-8" />
+                    </div>
+                    <p className="text-gray-700 italic mb-4">“{t.feedback}”</p>
+                    <h4 className="font-semibold">{t.name}</h4>
+                    <p className="text-sm text-gray-500">{t.role}</p>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+        </div>
       </section>
 
       <Footer />

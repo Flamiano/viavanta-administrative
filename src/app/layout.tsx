@@ -12,7 +12,7 @@ const winkyRough = Winky_Rough({
 export const metadata: Metadata = {
   title: {
     default: "ViaVanta",
-    template: "ViaVanta - %s", // This is makes dynamic titles work
+    template: "ViaVanta - %s",
   },
   description: "Administrative System for Travel and Tours",
   icons: {
