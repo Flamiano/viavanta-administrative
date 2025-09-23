@@ -811,7 +811,7 @@ export default function MasterAdminDashboard() {
                     </thead>
                     <tbody>
                       {recentUsers.length > 0 ? (
-                        recentUsers.map((user: any, idx: number) => (
+                        recentUsers.map((user, idx) => (
                           <tr key={user.id} className="hover:bg-gray-100">
                             <td className="px-4 py-2 border">{idx + 1}</td>
                             <td className="px-4 py-2 border">
@@ -2491,8 +2491,6 @@ type ApprovalAgg = Record<string, number>;
 type VisitorAgg = Record<string, number>;
 type MonthAgg = Record<string, number>;
 
-
-
 // Colors for approval
 const approvalColors: Record<string, string> = {
   Approved: "#22c55e",
@@ -2763,11 +2761,14 @@ function ReportsPage() {
       const { data: usersData } = await supabase
         .from("users")
         .select("approval_status");
-        const approvalAgg: ApprovalAgg = (usersData || []).reduce((acc: ApprovalAgg, u: { approval_status?: string }) => {
+      const approvalAgg: ApprovalAgg = (usersData || []).reduce(
+        (acc: ApprovalAgg, u: { approval_status?: string }) => {
           const status = u.approval_status || "Pending";
           acc[status] = (acc[status] || 0) + 1;
           return acc;
-        }, {});
+        },
+        {}
+      );
       setUsersByApproval(
         Object.keys(approvalAgg).map((status) => ({
           approval_status: status,
@@ -2785,11 +2786,14 @@ function ReportsPage() {
       const { data: visitorsData } = await supabase
         .from("visitors")
         .select("status");
-        const visitorsAgg: VisitorAgg = (visitorsData || []).reduce((acc: VisitorAgg, v: { status?: string }) => {
+      const visitorsAgg: VisitorAgg = (visitorsData || []).reduce(
+        (acc: VisitorAgg, v: { status?: string }) => {
           const s = v.status || "Expected";
           acc[s] = (acc[s] || 0) + 1;
           return acc;
-        }, {});
+        },
+        {}
+      );
       setVisitorsByStatus(
         Object.keys(visitorsAgg).map((s) => ({
           status: s,
@@ -2833,11 +2837,16 @@ function ReportsPage() {
       const { data: reservations } = await supabase
         .from("facility_reservations")
         .select("reservation_date");
-        const resAgg: MonthAgg = (reservations || []).reduce((acc: MonthAgg, r: { reservation_date: string }) => {
-          const month = new Date(r.reservation_date).toLocaleString("default", { month: "short" });
+      const resAgg: MonthAgg = (reservations || []).reduce(
+        (acc: MonthAgg, r: { reservation_date: string }) => {
+          const month = new Date(r.reservation_date).toLocaleString("default", {
+            month: "short",
+          });
           acc[month] = (acc[month] || 0) + 1;
           return acc;
-        }, {});
+        },
+        {}
+      );
       setMonthlyReservations(
         Object.keys(resAgg).map((m) => ({ month: m, total: resAgg[m] }))
       );
@@ -2846,11 +2855,16 @@ function ReportsPage() {
       const { data: messages } = await supabase
         .from("messages")
         .select("created_at");
-        const msgAgg: MonthAgg = (messages || []).reduce((acc: MonthAgg, m: { created_at: string }) => {
-          const month = new Date(m.created_at).toLocaleString("default", { month: "short" });
+      const msgAgg: MonthAgg = (messages || []).reduce(
+        (acc: MonthAgg, m: { created_at: string }) => {
+          const month = new Date(m.created_at).toLocaleString("default", {
+            month: "short",
+          });
           acc[month] = (acc[month] || 0) + 1;
           return acc;
-        }, {});
+        },
+        {}
+      );
       setMessagesByMonth(
         Object.keys(msgAgg).map((m) => ({ month: m, total: msgAgg[m] }))
       );

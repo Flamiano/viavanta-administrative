@@ -1,12 +1,13 @@
 import "./globals.css";
-import { Winky_Rough } from "next/font/google";
+import { Winky_Rough } from 'next/font/google';
 import type { Metadata } from "next";
 
 const winkyRough = Winky_Rough({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-winky-rough",
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  display: 'swap',
+  variable: '--font-winky-rough',
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
