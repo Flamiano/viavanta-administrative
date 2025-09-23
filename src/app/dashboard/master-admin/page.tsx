@@ -65,14 +65,6 @@ type Activity = {
   created_at: string;
 };
 
-type RecentUser = {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  created_at: string;
-};
-
 type UserStatus = {
   status: string;
   value: number;
@@ -90,9 +82,27 @@ type MenuItem = {
   items?: MenuItem[];
 };
 
-type MenuGroup = {
-  label: string | null;
-  items: MenuItem[];
+type User = {
+  id: number;
+  first_name: string;
+  middle_name: string | null;
+  last_name: string;
+  birthday: string;
+  age: number | null;
+  email: string;
+  contact_number: string;
+  address: string;
+  zipcode: string;
+  password: string;
+  visa_image_url: string | null;
+  passport_image_url: string | null;
+  valid_id_front_url: string | null;
+  valid_id_back_url: string | null;
+  approval_status: "Approved" | "Declined" | "Pending";
+  approved_by: number | null;
+  approved_at: string | null;
+  session_token: string | null;
+  created_at: string;
 };
 
 export default function MasterAdminDashboard() {
@@ -114,7 +124,7 @@ export default function MasterAdminDashboard() {
   const [visitorsToday, setVisitorsToday] = useState<number>(0);
   const [recentMessagesCount, setRecentMessagesCount] = useState<number>(0);
   const [activityData, setActivityData] = useState<Activity[]>([]);
-  const [recentUsers, setRecentUsers] = useState<RecentUser[]>([]);
+  const [recentUsers, setRecentUsers] = useState<User[]>([]);
   const [usersByStatus, setUsersByStatus] = useState<UserStatus[]>([]);
   const [legalCounts, setLegalCounts] = useState<LegalCount[]>([]);
   const LEGAL_COLORS = ["#82ca9d", "#8884d8", "#f97316"];
@@ -144,72 +154,84 @@ export default function MasterAdminDashboard() {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      // Top counts
-      const { count: admins } = await supabase
-        .from("admins")
-        .select("*", { count: "exact" });
-      const { count: users } = await supabase
-        .from("users")
-        .select("*", { count: "exact" });
-      const today = new Date().toISOString().split("T")[0];
-      const { count: visitors } = await supabase
-        .from("visitors")
-        .select("*", { count: "exact" })
-        .eq("visit_date", today);
-      const { count: messages } = await supabase
-        .from("messages")
-        .select("*", { count: "exact" })
-        .order("created_at", { ascending: false })
-        .limit(10);
+      try {
+        // Top counts
+        const { count: adminsCountResult } = await supabase
+          .from("admins")
+          .select("*", { count: "exact" });
+        const { count: usersCountResult } = await supabase
+          .from("users")
+          .select("*", { count: "exact" });
+        const today = new Date().toISOString().split("T")[0];
+        const { count: visitorsCount } = await supabase
+          .from("visitors")
+          .select("*", { count: "exact" })
+          .eq("visit_date", today);
+        const { count: messagesCount } = await supabase
+          .from("messages")
+          .select("*", { count: "exact" })
+          .order("created_at", { ascending: false })
+          .limit(10);
 
-      setAdminsCount(admins || 0);
-      setUsersCount(users || 0);
-      setVisitorsToday(visitors || 0);
-      setRecentMessagesCount(messages || 0);
+        setAdminsCount(adminsCountResult || 0);
+        setUsersCount(usersCountResult || 0);
+        setVisitorsToday(visitorsCount || 0);
+        setRecentMessagesCount(messagesCount || 0);
 
-      // Sample activity data (last 7 days)
-      const last7Days = Array.from({ length: 7 })
-        .map((_, i) => {
-          const date = new Date();
-          date.setDate(date.getDate() - i);
-          const formatted = date.toISOString().split("T")[0];
-          return {
-            date: formatted,
-            admins: Math.floor(Math.random() * 5),
-            users: Math.floor(Math.random() * 10),
-            visitors: Math.floor(Math.random() * 8),
-            messages: Math.floor(Math.random() * 12),
-          };
-        })
-        .reverse();
-      setActivityData(last7Days);
-
-      // Fetch recent users
-      const { data: usersData } = await supabase
-        .from("users")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(10);
-      setRecentUsers(usersData || []);
-
-      // Users by Status (Approved, Declined, Pending)
-      const { data: statusData } = await supabase
-        .from("users")
-        .select("approval_status, id");
-
-      if (statusData) {
-        const statusCounts: { [key: string]: number } = {};
-        statusData.forEach((u: { approval_status: string; id: number }) => {
-          statusCounts[u.approval_status] =
-            (statusCounts[u.approval_status] || 0) + 1;
-        });
-        const chartData: UserStatus[] = Object.keys(statusCounts).map(
-          (status, idx) => ({
-            status,
-            value: statusCounts[status],
+        // Sample activity data (last 7 days)
+        const last7Days = Array.from({ length: 7 })
+          .map((_, i) => {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const formatted = date.toISOString().split("T")[0];
+            return {
+              date: formatted,
+              admins: Math.floor(Math.random() * 5),
+              users: Math.floor(Math.random() * 10),
+              visitors: Math.floor(Math.random() * 8),
+              messages: Math.floor(Math.random() * 12),
+            };
           })
-        );
-        setUsersByStatus(chartData);
+          .reverse();
+        setActivityData(last7Days);
+
+        // Fetch recent users
+        const { data: usersData, error: usersError } = await supabase
+          .from<User>("users")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(10);
+
+        if (usersError) {
+          console.error("Error fetching recent users:", usersError.message);
+        } else {
+          setRecentUsers(usersData || []);
+        }
+
+        // Users by Status (Approved, Declined, Pending)
+        const { data: statusData, error: statusError } = await supabase
+          .from<User>("users")
+          .select("approval_status, id");
+
+        if (statusError) {
+          console.error(
+            "Error fetching user status data:",
+            statusError.message
+          );
+        } else if (statusData) {
+          const statusCounts: Record<string, number> = {};
+          statusData.forEach((u) => {
+            const status = u.approval_status || "Pending"; // fallback if null
+            statusCounts[status] = (statusCounts[status] || 0) + 1;
+          });
+
+          const chartData: UserStatus[] = Object.entries(statusCounts).map(
+            ([status, value]) => ({ status, value })
+          );
+          setUsersByStatus(chartData);
+        }
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
       }
     };
 
@@ -318,7 +340,11 @@ export default function MasterAdminDashboard() {
   };
 
   // Sidebar Menu Item
-  const renderMenuItem = (name: string, Icon: any, isDesktop = false) => {
+  const renderMenuItem = (
+    name: string,
+    Icon: MenuItem["icon"],
+    isDesktop = false
+  ) => {
     const isActive = active === name;
 
     // Special case for Logout
@@ -485,12 +511,12 @@ export default function MasterAdminDashboard() {
                     {group.label}
                   </p>
                 )}
-                {group.items.map((item) =>
+                {group.items.map((item: MenuItem) =>
                   item.items
-                    ? item.items.map((sub) =>
-                        renderMenuItem(sub.name, sub.icon, true)
+                    ? item.items.map((sub: MenuItem) =>
+                        renderMenuItem(sub.name, sub.icon, false)
                       )
-                    : renderMenuItem(item.name, item.icon, true)
+                    : renderMenuItem(item.name, item.icon, false)
                 )}
               </div>
             ))}
@@ -548,11 +574,10 @@ export default function MasterAdminDashboard() {
                           {group.label}
                         </p>
                       )}
-                      {group.items.map((item: any) =>
+                      {group.items.map((item: MenuItem) =>
                         item.items
-                          ? item.items.map(
-                              (sub: any) =>
-                                renderMenuItem(sub.name, sub.icon, false) // mobile style
+                          ? item.items.map((sub: MenuItem) =>
+                              renderMenuItem(sub.name, sub.icon, false)
                             )
                           : renderMenuItem(item.name, item.icon, false)
                       )}
@@ -575,10 +600,10 @@ export default function MasterAdminDashboard() {
         <main
           className="flex-1 overflow-auto min-h-screen pt-6 pb-6 px-4 lg:pr-6"
           style={{
-            // @ts-ignore CSS var run-time value
-            "--sidebar-width": sidebarWidth + "px",
-            // @ts-ignore CSS var run-time value
-            "--sidebar-gap": "16px",
+            ...({
+              "--sidebar-width": `${sidebarWidth}px`,
+              "--sidebar-gap": "16px",
+            } as React.CSSProperties),
           }}
         >
           <style jsx>{`
@@ -1169,7 +1194,9 @@ function AdminsPage() {
     setSavingEdit(true);
 
     // Prepare updates
-    const updates: any = {
+    const updates: Partial<
+      AdminRow & { password?: string; updated_at?: string }
+    > = {
       name: editForm.name.trim(),
       updated_at: new Date().toISOString(),
     };
@@ -2418,13 +2445,13 @@ function KpiCard({
 }
 
 // Reusable chart wrapper
-function ChartCard({
+function ChartCard<T>({
   title,
   data,
   children,
 }: {
   title: string;
-  data: any[];
+  data: T[];
   children: React.ReactNode;
 }) {
   return (
@@ -2460,6 +2487,11 @@ type ContractRow = {
   end_date: string | null;
   status: string;
 };
+type ApprovalAgg = Record<string, number>;
+type VisitorAgg = Record<string, number>;
+type MonthAgg = Record<string, number>;
+
+
 
 // Colors for approval
 const approvalColors: Record<string, string> = {
@@ -2731,11 +2763,11 @@ function ReportsPage() {
       const { data: usersData } = await supabase
         .from("users")
         .select("approval_status");
-      const approvalAgg = (usersData || []).reduce((acc: any, u: any) => {
-        const status = u.approval_status || "Pending";
-        acc[status] = (acc[status] || 0) + 1;
-        return acc;
-      }, {});
+        const approvalAgg: ApprovalAgg = (usersData || []).reduce((acc: ApprovalAgg, u: { approval_status?: string }) => {
+          const status = u.approval_status || "Pending";
+          acc[status] = (acc[status] || 0) + 1;
+          return acc;
+        }, {});
       setUsersByApproval(
         Object.keys(approvalAgg).map((status) => ({
           approval_status: status,
@@ -2753,11 +2785,11 @@ function ReportsPage() {
       const { data: visitorsData } = await supabase
         .from("visitors")
         .select("status");
-      const visitorsAgg = (visitorsData || []).reduce((acc: any, v: any) => {
-        const s = v.status || "Expected";
-        acc[s] = (acc[s] || 0) + 1;
-        return acc;
-      }, {});
+        const visitorsAgg: VisitorAgg = (visitorsData || []).reduce((acc: VisitorAgg, v: { status?: string }) => {
+          const s = v.status || "Expected";
+          acc[s] = (acc[s] || 0) + 1;
+          return acc;
+        }, {});
       setVisitorsByStatus(
         Object.keys(visitorsAgg).map((s) => ({
           status: s,
@@ -2801,13 +2833,11 @@ function ReportsPage() {
       const { data: reservations } = await supabase
         .from("facility_reservations")
         .select("reservation_date");
-      const resAgg = (reservations || []).reduce((acc: any, r: any) => {
-        const month = new Date(r.reservation_date).toLocaleString("default", {
-          month: "short",
-        });
-        acc[month] = (acc[month] || 0) + 1;
-        return acc;
-      }, {});
+        const resAgg: MonthAgg = (reservations || []).reduce((acc: MonthAgg, r: { reservation_date: string }) => {
+          const month = new Date(r.reservation_date).toLocaleString("default", { month: "short" });
+          acc[month] = (acc[month] || 0) + 1;
+          return acc;
+        }, {});
       setMonthlyReservations(
         Object.keys(resAgg).map((m) => ({ month: m, total: resAgg[m] }))
       );
@@ -2816,13 +2846,11 @@ function ReportsPage() {
       const { data: messages } = await supabase
         .from("messages")
         .select("created_at");
-      const msgAgg = (messages || []).reduce((acc: any, m: any) => {
-        const month = new Date(m.created_at).toLocaleString("default", {
-          month: "short",
-        });
-        acc[month] = (acc[month] || 0) + 1;
-        return acc;
-      }, {});
+        const msgAgg: MonthAgg = (messages || []).reduce((acc: MonthAgg, m: { created_at: string }) => {
+          const month = new Date(m.created_at).toLocaleString("default", { month: "short" });
+          acc[month] = (acc[month] || 0) + 1;
+          return acc;
+        }, {});
       setMessagesByMonth(
         Object.keys(msgAgg).map((m) => ({ month: m, total: msgAgg[m] }))
       );
@@ -2926,7 +2954,10 @@ function ReportsPage() {
       <div id="print-charts" className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Users by Approval */}
         <div className="chart-item">
-          <ChartCard title="Users by Approval Status" data={usersByApproval}>
+          <ChartCard<UserApprovalRow>
+            title="Users by Approval Status"
+            data={usersByApproval}
+          >
             <PieChart>
               <Pie
                 data={usersByApproval}
