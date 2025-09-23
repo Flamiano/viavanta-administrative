@@ -633,7 +633,7 @@ const VisitorsPage: React.FC<VisitorsPageProps> = ({ adminData }) => {
   return (
     <div className="p-6">
       <p className="text-gray-600 mb-4">
-        Manage all visitor records here. You can search, filter by status or
+        Manage all visitor records here.  You can search, filter by status or
         remarks, and review visit details such as purpose, date, and check-in or
         check-out times. You are also responsible for logging new visitors and
         keeping track of who created each record for accountability.
