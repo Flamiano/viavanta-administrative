@@ -503,12 +503,16 @@ export default function CasesPage({ adminData }: CasesPageProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {caseTypeData.map((entry) => {
               // Choose icon based on type
-              const iconMap: Record<string, any> = {
+              const iconMap: Record<
+                string,
+                React.ComponentType<React.SVGProps<SVGSVGElement>>
+              > = {
                 Civil: FileText,
                 Criminal: Gavel,
                 Administrative: Shield,
                 Other: Archive,
               };
+
               const Icon = iconMap[entry.type] || FileText;
 
               // Get border color (solid color, use first color of gradient if needed)

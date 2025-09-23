@@ -246,8 +246,12 @@ export default function RegisterPage() {
         "Account created successfully. Confirmation email sent!"
       );
       resetForm();
-    } catch (err: any) {
-      setFormError(err.message || "Something went wrong.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setFormError(err.message);
+      } else {
+        setFormError("Something went wrong.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -546,9 +550,12 @@ export default function RegisterPage() {
                 <div className="text-xs text-gray-500">Example:</div>
 
                 {/* Example Image */}
-                <img
+                <Image
                   src="/assets/documents/VISA.png"
                   alt="Visa Example"
+                  width={400}
+                  height={250}
+                  priority
                   className="mt-2 w-full rounded-lg border bg-gray-50"
                 />
 
@@ -579,9 +586,12 @@ export default function RegisterPage() {
                 <div className="text-xs text-gray-500">Example:</div>
 
                 {/* Example Image */}
-                <img
+                <Image
                   src="/assets/documents/PASSPORT.png"
                   alt="Passport Example"
+                  width={400}
+                  height={250}
+                  priority
                   className="mt-2 w-full rounded-lg border bg-gray-50"
                 />
 

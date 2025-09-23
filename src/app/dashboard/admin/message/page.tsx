@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import supabase from "@/utils/Supabase";
 import { User as UserIcon } from "lucide-react";
+import Image from "next/image";
+
 
 type AdminMessageProps = {
   adminData: {
@@ -224,10 +226,12 @@ const AdminMessage: React.FC<AdminMessageProps> = ({ adminData }) => {
                     {isAdmin && (
                       <div className="flex-shrink-0 ml-2">
                         <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden shadow">
-                          <img
+                          <Image
                             src="/logo/logo-dark-bg.png"
                             alt="Admin"
                             className="w-full h-full object-cover"
+                            fill
+                            priority
                           />
                         </div>
                       </div>

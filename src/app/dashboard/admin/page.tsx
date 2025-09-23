@@ -53,6 +53,89 @@ import LegalPage from "./legal/page";
 import AdminFooter from "@/comps/user-admin-footer/page";
 import AdminMessage from "./message/page";
 
+// Users
+type User = {
+  id: number;
+  first_name: string;
+  middle_name?: string;
+  last_name: string;
+  birthday: string;
+  age?: number;
+  email: string;
+  contact_number: string;
+  address: string;
+  zipcode: string;
+  approval_status: "Approved" | "Declined" | "Pending";
+  created_at: string;
+};
+
+// Facility reservations
+type FacilityReservation = {
+  id: number;
+  user_id: number;
+  facility_id: number;
+  reservation_date: string;
+  start_time: string;
+  end_time: string;
+};
+
+// Visitors
+type Visitor = {
+  id: number;
+  name: string;
+  contact_number?: string;
+  purpose?: string;
+  visit_date: string;
+  check_in?: string;
+  check_out?: string;
+  status: "Expected" | "Checked-in" | "Checked-out" | "Cancelled";
+  remarks?: "Late" | "Rescheduled" | "VIP" | "Follow-up Needed" | "No Show";
+};
+
+// Contracts
+type Contract = {
+  id: number;
+  contract_number: string;
+  title: string;
+  description?: string;
+  contract_type: "Employment" | "Service" | "Lease" | "Partnership" | "Other";
+  start_date: string;
+  end_date?: string;
+  status: "Pending Approval" | "Active" | "Expired" | "Terminated";
+  created_at: string;
+};
+
+// Cases
+type CaseRecord = {
+  id: number;
+  case_number: string;
+  title: string;
+  description?: string;
+  case_type: "Civil" | "Criminal" | "Administrative" | "Other";
+  status: "Open" | "In Progress" | "Closed" | "Appealed" | "Dismissed";
+  filed_date: string;
+  closed_date?: string;
+};
+
+// Compliance records
+type ComplianceRecord = {
+  id: number;
+  compliance_number: string;
+  category: "Regulatory" | "Financial" | "Operational" | "Other";
+  title: string;
+  description?: string;
+  due_date: string;
+  status: "Pending" | "Submitted" | "Approved" | "Rejected" | "Overdue";
+  created_at: string;
+};
+
+// Define menu item type
+type MenuItem = {
+  name: string;
+  icon: (props: React.ComponentProps<"svg">) => JSX.Element; // Lucide-react icon type
+  items?: MenuItem[];
+};
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [active, setActive] = useState("Dashboard");
@@ -195,12 +278,16 @@ export default function AdminDashboard() {
   const [complianceCount, setComplianceCount] = useState(0);
 
   // Lists for tables
-  const [usersTodayList, setUsersTodayList] = useState<any[]>([]);
-  const [facilitiesTodayList, setFacilitiesTodayList] = useState<any[]>([]);
-  const [visitorsTodayList, setVisitorsTodayList] = useState<any[]>([]);
-  const [contractsTodayList, setContractsTodayList] = useState<any[]>([]);
-  const [casesTodayList, setCasesTodayList] = useState<any[]>([]);
-  const [complianceTodayList, setComplianceTodayList] = useState<any[]>([]);
+  const [usersTodayList, setUsersTodayList] = useState<User[]>([]);
+  const [facilitiesTodayList, setFacilitiesTodayList] = useState<
+    FacilityReservation[]
+  >([]);
+  const [visitorsTodayList, setVisitorsTodayList] = useState<Visitor[]>([]);
+  const [contractsTodayList, setContractsTodayList] = useState<Contract[]>([]);
+  const [casesTodayList, setCasesTodayList] = useState<CaseRecord[]>([]);
+  const [complianceTodayList, setComplianceTodayList] = useState<
+    ComplianceRecord[]
+  >([]);
 
   // Chart states
   const [lineData, setLineData] = useState<
@@ -278,90 +365,96 @@ export default function AdminDashboard() {
 
     const fetchDashboardData = async () => {
       const today = new Date();
-      const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
-      const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+      const startOfDay = new Date(today);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(today);
+      endOfDay.setHours(23, 59, 59, 999);
 
       try {
-        // Users
-        const { data: allUsers } = await supabase.from("users").select("*");
+        // USERS
+        const { data: allUsers } = await supabase
+          .from<User>("users")
+          .select("*");
         setUsersToday(allUsers?.length || 0);
 
         const { data: newUsers } = await supabase
-          .from("users")
+          .from<User>("users")
           .select("*")
-          .gte("created_at", startOfDay)
-          .lte("created_at", endOfDay);
+          .gte("created_at", startOfDay.toISOString())
+          .lte("created_at", endOfDay.toISOString());
         setUsersTodayNew(newUsers?.length || 0);
         setUsersTodayList(newUsers || []);
 
-        // Facilities
+        // FACILITIES
         const { data: allFacilities } = await supabase
-          .from("facility_reservations")
+          .from<FacilityReservation>("facility_reservations")
           .select("*");
         setFacilitiesToday(allFacilities?.length || 0);
 
         const { data: newFacilities } = await supabase
-          .from("facility_reservations")
+          .from<FacilityReservation>("facility_reservations")
           .select("*")
-          .gte("reservation_date", startOfDay)
-          .lte("reservation_date", endOfDay);
+          .gte("reservation_date", startOfDay.toISOString())
+          .lte("reservation_date", endOfDay.toISOString());
         setFacilitiesTodayNew(newFacilities?.length || 0);
         setFacilitiesTodayList(newFacilities || []);
 
-        // Visitors
+        // VISITORS
         const { data: allVisitors } = await supabase
-          .from("visitors")
+          .from<Visitor>("visitors")
           .select("*");
         setVisitorsToday(allVisitors?.length || 0);
 
         const { data: newVisitors } = await supabase
-          .from("visitors")
+          .from<Visitor>("visitors")
           .select("*")
-          .gte("visit_date", startOfDay)
-          .lte("visit_date", endOfDay);
+          .gte("visit_date", startOfDay.toISOString())
+          .lte("visit_date", endOfDay.toISOString());
         setVisitorsTodayNew(newVisitors?.length || 0);
         setVisitorsTodayList(newVisitors || []);
 
-        // Contracts
+        // CONTRACTS
         const { data: allContracts } = await supabase
-          .from("contracts")
+          .from<Contract>("contracts")
           .select("*");
         setContractsCount(allContracts?.length || 0);
 
         const { data: newContracts } = await supabase
-          .from("contracts")
+          .from<Contract>("contracts")
           .select("*")
-          .gte("created_at", startOfDay)
-          .lte("created_at", endOfDay);
+          .gte("created_at", startOfDay.toISOString())
+          .lte("created_at", endOfDay.toISOString());
         setContractsTodayList(newContracts || []);
 
-        // Cases
-        const { data: allCases } = await supabase.from("cases").select("*");
+        // CASES
+        const { data: allCases } = await supabase
+          .from<CaseRecord>("cases")
+          .select("*");
         setCasesCount(allCases?.length || 0);
 
         const { data: newCases } = await supabase
-          .from("cases")
+          .from<CaseRecord>("cases")
           .select("*")
-          .gte("created_at", startOfDay)
-          .lte("created_at", endOfDay);
+          .gte("created_at", startOfDay.toISOString())
+          .lte("created_at", endOfDay.toISOString());
         setCasesTodayList(newCases || []);
 
-        // Compliance records
+        // COMPLIANCE
         const { data: allCompliance } = await supabase
-          .from("compliance_records")
+          .from<ComplianceRecord>("compliance_records")
           .select("*");
         setComplianceCount(allCompliance?.length || 0);
 
         const { data: newCompliance } = await supabase
-          .from("compliance_records")
+          .from<ComplianceRecord>("compliance_records")
           .select("*")
-          .gte("created_at", startOfDay)
-          .lte("created_at", endOfDay);
+          .gte("created_at", startOfDay.toISOString())
+          .lte("created_at", endOfDay.toISOString());
         setComplianceTodayList(newCompliance || []);
 
-        // Pending users
+        // PENDING USERS
         const { count: pendingCount } = await supabase
-          .from("users")
+          .from<User>("users")
           .select("id", { count: "exact" })
           .eq("approval_status", "Pending");
         setPendingDocuments(pendingCount || 0);
@@ -520,6 +613,65 @@ export default function AdminDashboard() {
     router.replace("/auth/login-admin");
   };
 
+  const handleUpdateProfile = async () => {
+    if (!adminData) return;
+
+    setLoading(true);
+
+    try {
+      const updates: Partial<{ name: string; profile_url: string }> = {};
+
+      if (newName !== adminData.name) updates.name = newName;
+      if (pendingImage) updates.profile_url = pendingImage;
+
+      if (currentPassword && newPassword) {
+        if (newPassword !== confirmPassword) {
+          setMessage("New password and confirmation do not match.");
+          setLoading(false);
+          return;
+        }
+
+        // Change password logic (example, adjust based on your DB)
+        const { error: pwError } = await supabase.auth.updateUser({
+          password: newPassword,
+        });
+
+        if (pwError) {
+          setMessage("Password update failed: " + pwError.message);
+          setLoading(false);
+          return;
+        }
+      }
+
+      if (Object.keys(updates).length > 0) {
+        const { error } = await supabase
+          .from("admins")
+          .update(updates)
+          .eq("id", adminData.id);
+
+        if (error) {
+          setMessage("Update failed: " + error.message);
+        } else {
+          setMessage("Profile updated successfully!");
+          const updatedAdmin = { ...adminData, ...updates };
+          setAdminData(updatedAdmin);
+          localStorage.setItem("adminData", JSON.stringify(updatedAdmin));
+          setPendingImage(null);
+        }
+      }
+
+      // Reset password fields
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err) {
+      console.error(err);
+      setMessage("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (checkingAuth) {
     return (
       <div className="flex items-center justify-center min-h-screen text-gray-600">
@@ -528,7 +680,7 @@ export default function AdminDashboard() {
     );
   }
 
-  const menuGroups = [
+  const menuGroups: { label: string | null; items: MenuItem[] }[] = [
     {
       label: null,
       items: [
@@ -537,6 +689,7 @@ export default function AdminDashboard() {
         { name: "Messages", icon: MessageSquare },
         {
           name: "Module",
+          icon: Menu, // any parent needs an icon
           items: [
             { name: "Reservation", icon: FileText },
             { name: "Documents", icon: File },
@@ -548,7 +701,7 @@ export default function AdminDashboard() {
     },
   ];
 
-  const bottomMenu = [
+  const bottomMenu: MenuItem[] = [
     { name: "Settings", icon: SettingsIcon },
     { name: "Logout", icon: LogOut },
   ];
@@ -583,7 +736,11 @@ export default function AdminDashboard() {
   };
 
   // Sidebar Style
-  const renderMenuItem = (name: string, Icon: any, isDesktop = false) => {
+  const renderMenuItem = (
+    name: string,
+    Icon: MenuItem["icon"],
+    isDesktop = false
+  ) => {
     const isActive = active === name;
 
     // Special case for Logout
@@ -593,16 +750,16 @@ export default function AdminDashboard() {
           key={name}
           onClick={() => setShowLogoutModal(true)}
           className={`
-            flex items-center gap-3 w-full py-3 px-4 transition cursor-pointer
-            ${isDesktop ? "rounded-l-xl" : "rounded-md"}
-            ${
-              isActive
-                ? isDesktop
-                  ? "bg-white text-gray-900 font-semibold"
-                  : "bg-gray-200 text-gray-900 font-semibold"
-                : "text-gray-400 hover:bg-gray-800 hover:text-white"
-            }
-          `}
+          flex items-center gap-3 w-full py-3 px-4 transition cursor-pointer
+          ${isDesktop ? "rounded-l-xl" : "rounded-md"}
+          ${
+            isActive
+              ? isDesktop
+                ? "bg-white text-gray-900 font-semibold"
+                : "bg-gray-200 text-gray-900 font-semibold"
+              : "text-gray-400 hover:bg-gray-800 hover:text-white"
+          }
+        `}
           title={isDesktop && sidebarCollapsed ? name : undefined}
         >
           <Icon className="w-5 h-5 shrink-0" />
@@ -619,20 +776,14 @@ export default function AdminDashboard() {
           name === "Logout" ? setShowLogoutModal(true) : handleMenuClick(name)
         }
         className={`
-            flex items-center gap-3 py-3 px-4 transition cursor-pointer
-            ${
-              isDesktop
-                ? "rounded-l-3xl w-[calc(100%+4px)]"
-                : "rounded-md w-full"
-            } 
-            ${
-              isActive
-                ? isDesktop
-                  ? "bg-white text-gray-900 font-semibold"
-                  : "bg-white text-gray-900 font-semibold"
-                : "text-gray-400 hover:bg-gray-800 hover:text-white"
-            }
-          `}
+        flex items-center gap-3 py-3 px-4 transition cursor-pointer
+        ${isDesktop ? "rounded-l-3xl w-[calc(100%+4px)]" : "rounded-md w-full"} 
+        ${
+          isActive
+            ? "bg-white text-gray-900 font-semibold"
+            : "text-gray-400 hover:bg-gray-800 hover:text-white"
+        }
+      `}
         title={isDesktop && sidebarCollapsed ? name : undefined}
       >
         <Icon className="w-5 h-5 shrink-0" />
@@ -749,28 +900,33 @@ export default function AdminDashboard() {
 
           {/* Menu */}
           <nav className="flex flex-col flex-grow px-1 mt-4">
-            {menuGroups.map((group: any, i: number) => (
-              <div key={i} className="mb-6 last:mb-0">
-                {group.label && !sidebarCollapsed && (
-                  <p className="px-6 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wide select-none">
-                    {group.label}
-                  </p>
-                )}
-                {group.items.map((item: any) =>
-                  item.items
-                    ? item.items.map((sub: any) =>
-                        renderMenuItem(sub.name, sub.icon, true)
-                      )
-                    : renderMenuItem(item.name, item.icon, true)
-                )}
-              </div>
-            ))}
+            {menuGroups.map(
+              (
+                group: { label: string | null; items: MenuItem[] },
+                i: number
+              ) => (
+                <div key={i} className="mb-6 last:mb-0">
+                  {group.label && !sidebarCollapsed && (
+                    <p className="px-6 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wide select-none">
+                      {group.label}
+                    </p>
+                  )}
+                  {group.items.map((item) =>
+                    item.items
+                      ? item.items.map((sub) =>
+                          renderMenuItem(sub.name, sub.icon, true)
+                        )
+                      : renderMenuItem(item.name, item.icon, true)
+                  )}
+                </div>
+              )
+            )}
           </nav>
 
           {/* Bottom Menu */}
           <div className="border-t border-gray-800 px-1 py-3 mb-4">
-            {bottomMenu.map(({ name, icon: Icon }: any) =>
-              renderMenuItem(name, Icon, true)
+            {bottomMenu.map(({ name, icon }) =>
+              renderMenuItem(name, icon, true)
             )}
           </div>
         </motion.aside>
@@ -814,27 +970,26 @@ export default function AdminDashboard() {
                 <nav className="flex flex-col flex-grow px-1 mt-4">
                   {menuGroups.map((group, i) => (
                     <div key={i} className="mb-6 last:mb-0">
-                      {group.label && (
-                        <p className="px-6 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wide select-none">
+                      {group.label && !sidebarCollapsed && (
+                        <p className="px-6 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wide select-none">
                           {group.label}
                         </p>
                       )}
-                      {group.items.map((item: any) =>
+                      {group.items.map((item) =>
                         item.items
-                          ? item.items.map(
-                              (sub: any) =>
-                                renderMenuItem(sub.name, sub.icon, false) // mobile style
+                          ? item.items.map((sub) =>
+                              renderMenuItem(sub.name, sub.icon, true)
                             )
-                          : renderMenuItem(item.name, item.icon, false)
+                          : renderMenuItem(item.name, item.icon, true)
                       )}
                     </div>
                   ))}
                 </nav>
 
                 {/* Bottom Menu */}
-                <div className="border-t border-gray-200 px-1 py-3 mb-4">
-                  {bottomMenu.map(({ name, icon: Icon }) =>
-                    renderMenuItem(name, Icon, false)
+                <div className="border-t border-gray-800 px-1 py-3 mb-4">
+                  {bottomMenu.map((item) =>
+                    renderMenuItem(item.name, item.icon, true)
                   )}
                 </div>
               </motion.aside>
@@ -1196,7 +1351,7 @@ export default function AdminDashboard() {
                             {/* Pie Chart */}
                             <div className="flex flex-col items-center">
                               <h3 className="text-white font-semibold text-lg mb-2 text-center">
-                                Today's Overview
+                                Today&apos;s Overview
                               </h3>
                               <span className="text-gray-400 text-sm mb-3">
                                 {new Date().toLocaleDateString([], {

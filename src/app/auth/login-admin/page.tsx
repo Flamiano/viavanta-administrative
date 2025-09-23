@@ -8,6 +8,19 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/utils/Supabase";
 
+export type Admin = {
+  id: number;
+  profile_url?: string | null;
+  name: string;
+  email: string;
+  password: string;
+  role: "admin" | "master";
+  created_by?: number | null;
+  created_at: string; // timestamp
+  updated_at: string; // timestamp
+  session_token?: string | null;
+};
+
 export default function AdminLoginPage() {
   const router = useRouter();
 
@@ -81,7 +94,7 @@ export default function AdminLoginPage() {
           name: admin.name,
           email: admin.email,
           role: admin.role,
-          sessionToken: newToken,
+          session_token: newToken,
         })
       );
 

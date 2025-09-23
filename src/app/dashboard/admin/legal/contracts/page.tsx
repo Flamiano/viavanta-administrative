@@ -28,12 +28,32 @@ type AdminData = {
   role: string;
 } | null;
 
+type Contract = {
+  id: number;
+  contract_number: string;
+  title: string;
+  description: string;
+  contract_type: string;
+  start_date: string;
+  end_date: string;
+  status: string;
+  document_url?: string;
+  created_at?: string;
+  updated_at?: string;
+  admin_id?: number;
+  admin?: {
+    id: number;
+    name: string;
+    email: string;
+  } | null;
+};
+
 type ContractsPageProps = {
   adminData: AdminData;
 };
 
 export default function ContractsPage({ adminData }: ContractsPageProps) {
-  const [contracts, setContracts] = useState<any[]>([]);
+  const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Modal state
@@ -88,7 +108,7 @@ export default function ContractsPage({ adminData }: ContractsPageProps) {
     if (error) {
       console.error("Error fetching contracts:", error);
     } else if (data) {
-      setContracts(data);
+      setContracts(data as Contract[]);
     }
 
     setLoading(false);

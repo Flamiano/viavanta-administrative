@@ -6,6 +6,7 @@ import supabase from "@/utils/Supabase";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { Info } from "lucide-react";
 
+
 type DocumentsPageProps = {
   adminData: {
     id: number;
@@ -56,6 +57,26 @@ type ArchivedDoc = {
   category: string;
   archived_at: string;
 };
+
+// Matches columns selected from "users"
+type UserRow = {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  contact_number: string;
+  address: string;
+  zipcode: string | null;
+  approval_status: "Approved" | "Declined" | "Pending";
+  visa_image_url: string | null;
+  passport_image_url: string | null;
+  valid_id_front_url: string | null;
+  valid_id_back_url: string | null;
+  approved_by: number | null;
+};
+
+// Matches full archived_users_documents row
+type ArchivedRow = ArchivedDoc;
 
 export default function DocumentsPage({ adminData }: DocumentsPageProps) {
   const [docs, setDocs] = useState<UserDoc[]>([]);
@@ -210,32 +231,33 @@ export default function DocumentsPage({ adminData }: DocumentsPageProps) {
         .from("admins")
         .select("id, name");
 
-      const formatted = usersData?.map((u: any) => {
-        const admin = adminsData?.find((a) => a.id === u.approved_by);
-        return {
-          id: u.id,
-          first_name: u.first_name,
-          last_name: u.last_name,
-          email: u.email,
-          contact_number: u.contact_number,
-          address: u.address,
-          zipcode: u.zipcode,
-          approval_status: u.approval_status,
-          visa_image_url: u.visa_image_url
-            ? getPublicUrl(u.visa_image_url)
-            : null,
-          passport_image_url: u.passport_image_url
-            ? getPublicUrl(u.passport_image_url)
-            : null,
-          valid_id_front_url: u.valid_id_front_url
-            ? getPublicUrl(u.valid_id_front_url)
-            : null,
-          valid_id_back_url: u.valid_id_back_url
-            ? getPublicUrl(u.valid_id_back_url)
-            : null,
-          approved_by: admin?.name || null,
-        };
-      });
+      const formatted: UserDoc[] =
+        usersData?.map((u: UserRow) => {
+          const admin = adminsData?.find((a) => a.id === u.approved_by);
+          return {
+            id: u.id,
+            first_name: u.first_name,
+            last_name: u.last_name,
+            email: u.email,
+            contact_number: u.contact_number,
+            address: u.address,
+            zipcode: u.zipcode,
+            approval_status: u.approval_status,
+            visa_image_url: u.visa_image_url
+              ? getPublicUrl(u.visa_image_url)
+              : null,
+            passport_image_url: u.passport_image_url
+              ? getPublicUrl(u.passport_image_url)
+              : null,
+            valid_id_front_url: u.valid_id_front_url
+              ? getPublicUrl(u.valid_id_front_url)
+              : null,
+            valid_id_back_url: u.valid_id_back_url
+              ? getPublicUrl(u.valid_id_back_url)
+              : null,
+            approved_by: admin?.name || null,
+          };
+        }) ?? [];
 
       setDocs(formatted || []);
     };
@@ -251,21 +273,22 @@ export default function DocumentsPage({ adminData }: DocumentsPageProps) {
         return;
       }
 
-      const formatted = data?.map((d: any) => ({
-        ...d,
-        visa_image_url: d.visa_image_url
-          ? getPublicUrl(d.visa_image_url)
-          : null,
-        passport_image_url: d.passport_image_url
-          ? getPublicUrl(d.passport_image_url)
-          : null,
-        valid_id_front_url: d.valid_id_front_url
-          ? getPublicUrl(d.valid_id_front_url)
-          : null,
-        valid_id_back_url: d.valid_id_back_url
-          ? getPublicUrl(d.valid_id_back_url)
-          : null,
-      }));
+      const formatted: ArchivedDoc[] =
+        data?.map((d: ArchivedRow) => ({
+          ...d,
+          visa_image_url: d.visa_image_url
+            ? getPublicUrl(d.visa_image_url)
+            : null,
+          passport_image_url: d.passport_image_url
+            ? getPublicUrl(d.passport_image_url)
+            : null,
+          valid_id_front_url: d.valid_id_front_url
+            ? getPublicUrl(d.valid_id_front_url)
+            : null,
+          valid_id_back_url: d.valid_id_back_url
+            ? getPublicUrl(d.valid_id_back_url)
+            : null,
+        })) ?? [];
 
       setArchivedDocs(formatted || []);
     };
@@ -397,9 +420,14 @@ export default function DocumentsPage({ adminData }: DocumentsPageProps) {
       setArchiveId(null);
       setSelectedDoc(null);
       setOpen(false);
-    } catch (err: any) {
-      console.error("Failed to archive user:", err.message || err);
-      alert(`Failed to archive user: ${err.message || "Check console"}`);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Failed to archive user:", err.message);
+        alert(`Failed to archive user: ${err.message}`);
+      } else {
+        console.error("Failed to archive user:", err);
+        alert("Failed to archive user: Unknown error");
+      }
     } finally {
       setArchiving(false);
     }
@@ -502,9 +530,14 @@ export default function DocumentsPage({ adminData }: DocumentsPageProps) {
       setRetrieveId(null);
       setSelectedDoc(null);
       setOpen(false);
-    } catch (err: any) {
-      console.error("Failed to retrieve user:", err.message || err);
-      alert(`Failed to retrieve user: ${err.message || "Check console"}`);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Failed to retrieve user:", err.message);
+        alert(`Failed to retrieve user: ${err.message}`);
+      } else {
+        console.error("Failed to retrieve user:", err);
+        alert("Failed to retrieve user: Unknown error");
+      }
     } finally {
       setRetrieving(false);
     }

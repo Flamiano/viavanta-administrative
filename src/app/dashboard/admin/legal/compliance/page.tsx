@@ -46,10 +46,11 @@ type CompliancePageProps = {
 };
 
 export default function CompliancePage({ adminData }: CompliancePageProps) {
-  const [compliance, setCompliance] = useState<any[]>([]);
+  const [compliance, setCompliance] = useState<ComplianceRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState<any[]>([]);
-
+  const [users, setUsers] = useState<
+    { id: number; first_name: string; last_name: string; email: string }[]
+  >([]);
   // Modal state
   const [showComplianceWizard, setShowComplianceWizard] = useState(false);
   const [complianceStep, setComplianceStep] = useState(1);

@@ -30,8 +30,48 @@ type UsersPageProps = {
   } | null;
 };
 
+interface User {
+  id: number;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  birthday: string;
+  age: number;
+  contact_number: string;
+  address: string;
+  zipcode: string;
+  email: string;
+  password?: string;
+  approval_status: "Pending" | "Approved" | "Declined";
+  decline_reason?: string | null;
+  visa_image_url?: string | null;
+  passport_image_url?: string | null;
+  valid_id_front_url?: string | null;
+  valid_id_back_url?: string | null;
+  approved_by_admin?: {
+    id: number;
+    name: string;
+    email: string;
+  } | null;
+}
+
+interface FormData {
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  birthday: string;
+  age: number | "";
+  contact_number: string;
+  address: string;
+  zipcode: string;
+  email: string;
+  password: string;
+  confirm: string;
+  approval_status: "Pending" | "Approved" | "Declined" | "";
+}
+
 const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +82,7 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
   // States for Add User Modal
   const [showWizard, setShowWizard] = useState(false);
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState<any>({
+  const [form, setForm] = useState<FormData>({
     first_name: "",
     middle_name: "",
     last_name: "",
@@ -92,7 +132,7 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
   const [deleteReason, setDeleteReason] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
-  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [updateSuccess, setUpdateSuccess] = useState<string | null>(null);
   const [saveDisabled, setSaveDisabled] = useState(false);
 
@@ -222,27 +262,23 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
 
   // Auto Fetch Users
   useEffect(() => {
-    // Initial fetch
     fetchUsers();
 
-    // Subscribe to changes in the users table
     const channel = supabase
       .channel("users-changes")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "users" },
-        (payload) => {
-          console.log("Change received!", payload);
-          fetchUsers(); // refresh table whenever something changes
+        () => {
+          fetchUsers();
         }
       )
       .subscribe();
 
-    // cleanup on unmount
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [fetchUsers]);
 
   // For resolving storage URLs  (Bucket in Database)
   function getPublicUrl(path: string | null) {
@@ -650,7 +686,7 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
           </tbody>
         </table>
       </div>
-      
+
       {/* Pagination */}
       <div className="flex items-center justify-center gap-2 mt-4">
         <button

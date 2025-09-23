@@ -71,13 +71,7 @@ const initialVisitorForm: VisitorForm = {
 };
 
 // ---------- Badge ----------
-const Badge = ({
-  text,
-  type,
-}: {
-  text: string;
-  type: "status" | "remarks" | "purpose";
-}) => {
+const Badge = ({ text }: { text: string }) => {
   const colors: Record<string, string> = {
     Expected: "bg-yellow-100 text-yellow-800",
     "Checked-in": "bg-green-100 text-green-800",
@@ -461,36 +455,8 @@ type VisitorsPageProps = {
   adminData: AdminData;
 };
 
-// ---------- Stat Card ----------
-const StatCard = ({
-  title,
-  count,
-  icon: Icon,
-  color,
-}: {
-  title: string;
-  count: number;
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
-}) => {
-  return (
-    <div
-      className="p-6 rounded-2xl shadow-md bg-gray-900 text-white 
-      transform transition hover:scale-105 hover:shadow-xl"
-    >
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-400">{title}</p>
-          <p className="text-3xl font-bold mt-1">{count}</p>
-        </div>
-        <div
-          className={`w-12 h-12 flex items-center justify-center rounded-xl ${color}`}
-        >
-          <Icon className="w-6 h-6 text-white" />
-        </div>
-      </div>
-    </div>
-  );
+type VisitorWithAdmin = Visitor & {
+  admins?: { id: number; name: string } | null;
 };
 
 const VisitorsPage: React.FC<VisitorsPageProps> = ({ adminData }) => {
@@ -499,7 +465,7 @@ const VisitorsPage: React.FC<VisitorsPageProps> = ({ adminData }) => {
 
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [remarksFilter, setRemarksFilter] = useState<string>("");
-  const [dateFilter, setDateFilter] = useState("");
+  const [dateFilter] = useState("");
   const [search, setSearch] = useState<string>("");
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -514,29 +480,37 @@ const VisitorsPage: React.FC<VisitorsPageProps> = ({ adminData }) => {
   const [editingVisitor, setEditingVisitor] = useState<Visitor | null>(null);
 
   // Fetch visitors + admin who logged them
-  const fetchVisitors = async () => {
+  async function fetchVisitors() {
     setLoading(true);
+
     const { data, error } = await supabase
       .from("visitors")
-      .select(
-        `
-          *,
-          admins:logged_by (id, name)
-        `
-      )
+      .select(`*, admins:logged_by (id, name)`)
       .order("visit_date", { ascending: false });
 
     if (error) {
       console.error("Error fetching visitors:", error.message);
     } else {
-      const formatted = (data || []).map((v: any) => ({
-        ...v,
-        admin_name: v.admins ? v.admins.name : "—",
-      }));
+      const formatted: Visitor[] = ((data as VisitorWithAdmin[]) || []).map(
+        (v) => ({
+          id: v.id,
+          name: v.name,
+          contact_number: v.contact_number,
+          purpose: v.purpose,
+          visit_date: v.visit_date,
+          check_in: v.check_in,
+          check_out: v.check_out,
+          status: v.status,
+          remarks: v.remarks,
+          logged_by: v.logged_by,
+          admin_name: v.admins?.name || "—",
+        })
+      );
       setVisitors(formatted);
     }
+
     setLoading(false);
-  };
+  }
 
   // Fetch on mount
   useEffect(() => {

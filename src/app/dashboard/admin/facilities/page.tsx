@@ -39,6 +39,25 @@ type Facility = {
   } | null;
 };
 
+type ReservationUser = {
+  id: number;
+  first_name: string;
+  middle_name?: string | null;
+  last_name: string;
+  email: string;
+  contact_number: string;
+  address: string;
+};
+
+type FacilityReservation = {
+  id: number;
+  reservation_date: string;
+  start_time: string;
+  end_time: string;
+  created_at: string;
+  users: ReservationUser;
+};
+
 // Admin Details
 type FacilitiesPageProps = {
   adminData: {
@@ -70,7 +89,8 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
 
   //View Modal Traveler
   const [viewModalOpen, setViewModalOpen] = useState(false);
-  const [selectedReservation, setSelectedReservation] = useState<any>(null);
+  const [selectedReservation, setSelectedReservation] =
+    useState<FacilityReservation | null>(null);
 
   //Admin Details
   const adminId = adminData?.id;

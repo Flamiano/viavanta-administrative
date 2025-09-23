@@ -8,6 +8,29 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/utils/Supabase";
 
+type User = {
+  id: number;
+  first_name: string;
+  middle_name?: string | null;
+  last_name: string;
+  birthday: string; // Supabase returns DATE as string
+  age?: number | null;
+  email: string;
+  contact_number: string;
+  address: string;
+  zipcode: string;
+  password: string;
+  visa_image_url?: string | null;
+  passport_image_url?: string | null;
+  valid_id_front_url?: string | null;
+  valid_id_back_url?: string | null;
+  approval_status: "Approved" | "Declined" | "Pending";
+  approved_by?: number | null;
+  approved_at?: string | null; // timestamp from Supabase
+  session_token?: string | null;
+  created_at: string; // timestamp
+};
+
 export default function LoginPage() {
   const router = useRouter();
 
@@ -15,7 +38,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [alreadyLoggedInUser, setAlreadyLoggedInUser] = useState<any>(null);
+  const [alreadyLoggedInUser, setAlreadyLoggedInUser] = useState<User | null>(
+    null
+  );
 
   // Check if this browser/session is already logged in
   useEffect(() => {
@@ -28,10 +53,10 @@ export default function LoginPage() {
           .from("users")
           .select("*")
           .eq("id", Number(userId))
-          .single();
+          .single<User>();
 
         if (data) {
-          setAlreadyLoggedInUser(data); // store logged-in user info
+          setAlreadyLoggedInUser(data);
         }
       } catch (err) {
         console.error("Error checking session:", err);

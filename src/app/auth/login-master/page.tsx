@@ -8,6 +8,20 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/utils/Supabase";
 
+export type Admin = {
+  id: number;
+  profile_url?: string | null;
+  name: string;
+  email: string;
+  password: string;
+  role: "admin" | "master";  
+  created_by?: number | null;
+  created_at: string; // timestamp
+  updated_at: string; // timestamp
+  session_token?: string | null;
+};
+
+
 export default function MasterAdminLoginPage() {
   const router = useRouter();
 
@@ -15,7 +29,8 @@ export default function MasterAdminLoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [alreadyLoggedInAdmin, setAlreadyLoggedInAdmin] = useState<any>(null);
+  const [alreadyLoggedInAdmin, setAlreadyLoggedInAdmin] =
+    useState<Admin | null>(null);
 
   useEffect(() => {
     const storedAdmin = localStorage.getItem("admin");
@@ -74,7 +89,7 @@ export default function MasterAdminLoginPage() {
           name: master.name,
           email: master.email,
           role: master.role,
-          sessionToken: newToken,
+          session_token: newToken, 
         })
       );
 
