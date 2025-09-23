@@ -472,7 +472,7 @@ const VisitorsPage: React.FC<VisitorsPageProps> = ({ adminData }) => {
   const rowsPerPage = 10;
 
   const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [deleteReason, setDeleteReason] = useState("");
+  const [_deleteReason, setDeleteReason] = useState("");
   const [deleting, setDeleting] = useState(false);
 
   // modal state
@@ -582,8 +582,12 @@ const VisitorsPage: React.FC<VisitorsPageProps> = ({ adminData }) => {
 
       // Always refresh after save
       await fetchVisitors();
-    } catch (err: any) {
-      console.error("Error saving visitor:", err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error("Error saving visitor:", err.message);
+      } else {
+        console.error("Unexpected error:", err);
+      }
     }
   };
 
@@ -606,8 +610,13 @@ const VisitorsPage: React.FC<VisitorsPageProps> = ({ adminData }) => {
       // reset modal state
       setDeleteId(null);
       setDeleteReason("");
-    } catch (err: any) {
-      console.error("Error deleting visitor:", err.message);
+      // handleDeleteVisitor
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error("Error deleting visitor:", err.message);
+      } else {
+        console.error("Unexpected error:", err);
+      }
     } finally {
       setDeleting(false);
     }
@@ -633,7 +642,7 @@ const VisitorsPage: React.FC<VisitorsPageProps> = ({ adminData }) => {
   return (
     <div className="p-6">
       <p className="text-gray-600 mb-4">
-        Manage all visitor records here.  You can search, filter by status or
+        Manage all visitor records here. You can search, filter by status or
         remarks, and review visit details such as purpose, date, and check-in or
         check-out times. You are also responsible for logging new visitors and
         keeping track of who created each record for accountability.

@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 const winkyRough = Winky_Rough({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-winky-rough",
 });
