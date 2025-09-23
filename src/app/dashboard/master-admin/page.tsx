@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import html2canvas from "html2canvas";
 
 import {
   LayoutDashboard,
@@ -59,6 +58,43 @@ import {
 
 import supabase from "@/utils/Supabase";
 
+type Activity = {
+  id: number;
+  action: string;
+  user_id: number;
+  created_at: string;
+};
+
+type RecentUser = {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  created_at: string;
+};
+
+type UserStatus = {
+  status: string;
+  value: number;
+};
+
+type LegalCount = {
+  name: string;
+  value: number;
+  fill: string;
+};
+
+type MenuItem = {
+  name: string;
+  icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
+  items?: MenuItem[];
+};
+
+type MenuGroup = {
+  label: string | null;
+  items: MenuItem[];
+};
+
 export default function MasterAdminDashboard() {
   const router = useRouter();
   const [active, setActive] = useState("Dashboard");
@@ -77,10 +113,10 @@ export default function MasterAdminDashboard() {
   const [usersCount, setUsersCount] = useState<number>(0);
   const [visitorsToday, setVisitorsToday] = useState<number>(0);
   const [recentMessagesCount, setRecentMessagesCount] = useState<number>(0);
-  const [activityData, setActivityData] = useState<any[]>([]);
-  const [recentUsers, setRecentUsers] = useState<any[]>([]);
-  const [usersByStatus, setUsersByStatus] = useState<any[]>([]);
-  const [legalCounts, setLegalCounts] = useState<any[]>([]);
+  const [activityData, setActivityData] = useState<Activity[]>([]);
+  const [recentUsers, setRecentUsers] = useState<RecentUser[]>([]);
+  const [usersByStatus, setUsersByStatus] = useState<UserStatus[]>([]);
+  const [legalCounts, setLegalCounts] = useState<LegalCount[]>([]);
   const LEGAL_COLORS = ["#82ca9d", "#8884d8", "#f97316"];
 
   // Legal Counts
@@ -160,17 +196,19 @@ export default function MasterAdminDashboard() {
       const { data: statusData } = await supabase
         .from("users")
         .select("approval_status, id");
+
       if (statusData) {
         const statusCounts: { [key: string]: number } = {};
-        statusData.forEach((u: any) => {
+        statusData.forEach((u: { approval_status: string; id: number }) => {
           statusCounts[u.approval_status] =
             (statusCounts[u.approval_status] || 0) + 1;
         });
-        const chartData = Object.keys(statusCounts).map((status, idx) => ({
-          status,
-          count: statusCounts[status],
-          color: ["#82ca9d", "#f97316", "#8884d8"][idx % 3], // Approved, Declined, Pending
-        }));
+        const chartData: UserStatus[] = Object.keys(statusCounts).map(
+          (status, idx) => ({
+            status,
+            value: statusCounts[status],
+          })
+        );
         setUsersByStatus(chartData);
       }
     };
@@ -252,7 +290,7 @@ export default function MasterAdminDashboard() {
     );
   }
 
-  const menuGroups = [
+  const menuGroups: { label: string | null; items: MenuItem[] }[] = [
     {
       label: null,
       items: [
@@ -265,7 +303,7 @@ export default function MasterAdminDashboard() {
     },
   ];
 
-  const bottomMenu = [{ name: "Logout", icon: LogOut }];
+  const bottomMenu: MenuItem[] = [{ name: "Logout", icon: LogOut }];
 
   const expandedWidth = 265;
   const collapsedWidth = 72;
@@ -447,9 +485,9 @@ export default function MasterAdminDashboard() {
                     {group.label}
                   </p>
                 )}
-                {group.items.map((item: any) =>
+                {group.items.map((item) =>
                   item.items
-                    ? item.items.map((sub: any) =>
+                    ? item.items.map((sub) =>
                         renderMenuItem(sub.name, sub.icon, true)
                       )
                     : renderMenuItem(item.name, item.icon, true)
@@ -460,7 +498,7 @@ export default function MasterAdminDashboard() {
 
           {/* Bottom Menu */}
           <div className="border-t border-gray-800 px-1 py-3 mb-4">
-            {bottomMenu.map(({ name, icon: Icon }: any) =>
+            {bottomMenu.map(({ name, icon: Icon }) =>
               renderMenuItem(name, Icon, true)
             )}
           </div>
@@ -525,7 +563,7 @@ export default function MasterAdminDashboard() {
                 {/* Bottom Menu */}
                 <div className="border-t border-gray-200 px-1 py-3 mb-4">
                   {bottomMenu.map(({ name, icon: Icon }) =>
-                    renderMenuItem(name, Icon, false)
+                    renderMenuItem(name, Icon, true)
                   )}
                 </div>
               </motion.aside>
@@ -2462,9 +2500,9 @@ function ReportsPage() {
     role: string;
   } | null>(null);
 
-// Print Handler
-function handlePrintGraphs() {
-  const kpiSection = `
+  // Print Handler
+  function handlePrintGraphs() {
+    const kpiSection = `
     <div class="kpi-container">
       <h3>Key Performance Indicators</h3>
       <div class="kpi-row">
@@ -2477,21 +2515,21 @@ function handlePrintGraphs() {
     </div>
   `;
 
-  const tableSection = document.querySelector("#print-table");
+    const tableSection = document.querySelector("#print-table");
 
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) return;
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
 
-  const now = new Date();
-  const formattedDate = now.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
 
-  // 🔹 Merge Analytical Tables
-  const analyticalTables = `
+    // 🔹 Merge Analytical Tables
+    const analyticalTables = `
     <h3>Analytical Data</h3>
 
     <!-- Users by Approval -->
@@ -2542,7 +2580,7 @@ function handlePrintGraphs() {
     </table>
   `;
 
-  printWindow.document.write(`
+    printWindow.document.write(`
     <html>
       <head>
         <title>System Report - Travel & Tours</title>
@@ -2614,7 +2652,9 @@ function handlePrintGraphs() {
         <div class="header">
           <div class="header-left">${formattedDate}</div>
           <div class="header-center">
-            <img src="${window.location.origin}/logo/logo-white-bg.png" alt="Logo" />
+            <img src="${
+              window.location.origin
+            }/logo/logo-white-bg.png" alt="Logo" />
             <h2>TRAVEL & TOURS</h2>
             <h2>MANAGEMENT SYSTEM</h2>
             <h3>ADMINISTRATIVE</h3>
@@ -2646,14 +2686,11 @@ function handlePrintGraphs() {
     </html>
   `);
 
-  printWindow.document.close();
-  setTimeout(() => {
-    printWindow.print();
-  }, 500);
-}
-
-
-
+    printWindow.document.close();
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  }
 
   // Fetch the master admin
   async function fetchMaster() {
