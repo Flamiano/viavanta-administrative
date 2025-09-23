@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import supabase from "@/utils/Supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -68,6 +68,22 @@ interface FormData {
   password: string;
   confirm: string;
   approval_status: "Pending" | "Approved" | "Declined" | "";
+}
+
+interface UpdateUserData {
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  birthday: string;
+  age: number | "";
+  contact_number: string;
+  address: string;
+  zipcode: string;
+  email: string;
+  approval_status: "Pending" | "Approved" | "Declined";
+  password?: string;
+  approved_by?: number;
+  approved_at?: string;
 }
 
 const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
@@ -199,7 +215,7 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
       if (fetchError) throw fetchError;
 
       // build update payload
-      const updateData: any = {
+      const updateData: UpdateUserData = {
         first_name: form.first_name,
         middle_name: form.middle_name,
         last_name: form.last_name,
@@ -226,7 +242,7 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
       }
 
       // push update to supabase
-      const { data, error } = await supabase
+      const { data: _data, error } = await supabase
         .from("users")
         .update(updateData)
         .eq("id", id)
@@ -260,47 +276,21 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
     }
   };
 
-  // Auto Fetch Users
-  useEffect(() => {
-    fetchUsers();
-
-    const channel = supabase
-      .channel("users-changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "users" },
-        () => {
-          fetchUsers();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [fetchUsers]);
-
-  // For resolving storage URLs  (Bucket in Database)
-  function getPublicUrl(path: string | null) {
-    if (!path) return null;
-    const { data } = supabase.storage.from("user-documents").getPublicUrl(path);
-    return data.publicUrl;
-  }
-
-  async function fetchUsers() {
+  // Fetch users
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
 
-      const { data, error } = await supabase.from("users").select(`
-        *,
-        approved_by_admin:approved_by (
-          id,
-          name,
-          email
-        )
-      `);
+      const { data, error } = await supabase.from<User>("users").select(`
+      *,
+      approved_by_admin:approved_by (
+        id,
+        name,
+        email
+      )
+    `);
 
-      if (error) throw error;
+      if (error) throw new Error(error.message);
 
       const usersWithImages = data?.map((u) => ({
         ...u,
@@ -319,11 +309,39 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
       }));
 
       setUsers(usersWithImages || []);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Unknown error occurred while fetching users.");
+      }
     } finally {
       setLoading(false);
     }
+  }, [adminId]);
+
+  // Auto Fetch Users
+  useEffect(() => {
+    fetchUsers();
+    const channel = supabase
+      .channel("users-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "users" },
+        fetchUsers
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchUsers]);
+
+  // For resolving storage URLs  (Bucket in Database)
+  function getPublicUrl(path: string | null) {
+    if (!path) return null;
+    const { data } = supabase.storage.from("user-documents").getPublicUrl(path);
+    return data.publicUrl;
   }
 
   // Stepper navigation with validation
@@ -360,13 +378,13 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
         return setFormError("Passwords do not match.");
 
       // Check if email already exists in database
-      const { data: existingUser, error: emailCheckError } = await supabase
+      const { data: existingUser, error: _emailCheckError } = await supabase
         .from("users")
         .select("id")
         .eq("email", form.email.trim().toLowerCase())
         .single();
 
-      if (emailCheckError && emailCheckError.code !== "PGRST116") {
+      if (_emailCheckError && _emailCheckError.code !== "PGRST116") {
         return setFormError("Unable to validate email. Please try again.");
       }
 
@@ -453,8 +471,14 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
       setShowWizard(false);
       fetchUsers();
       resetForm();
-    } catch (err: any) {
-      setFormError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error(err.message);
+        setFormError(err.message);
+      } else {
+        console.error(err);
+        setFormError("Unknown error occurred");
+      }
     } finally {
       setCreating(false);
     }

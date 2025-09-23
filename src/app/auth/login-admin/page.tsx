@@ -28,7 +28,8 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [alreadyLoggedInAdmin, setAlreadyLoggedInAdmin] = useState<any>(null);
+  const [alreadyLoggedInAdmin, setAlreadyLoggedInAdmin] =
+    useState<Admin | null>(null);
 
   // Check if admin is already logged in
   useEffect(() => {
@@ -36,7 +37,7 @@ export default function AdminLoginPage() {
     if (!storedAdmin) return;
 
     try {
-      const admin = JSON.parse(storedAdmin);
+      const admin: Admin = JSON.parse(storedAdmin);
       if (admin && ["admin", "master"].includes(admin.role)) {
         setAlreadyLoggedInAdmin(admin);
       }

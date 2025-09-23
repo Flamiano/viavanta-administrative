@@ -6,7 +6,6 @@ import supabase from "@/utils/Supabase";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { Info } from "lucide-react";
 
-
 type DocumentsPageProps = {
   adminData: {
     id: number;
@@ -999,11 +998,9 @@ export default function DocumentsPage({ adminData }: DocumentsPageProps) {
                     {/* Left Side */}
                     <div className="flex gap-3">
                       {/* Show Delete only if Active */}
-                      {!("archived_at" in selectedDoc) && (
+                      {selectedDoc && !("archived_at" in selectedDoc) && (
                         <button
-                          onClick={() =>
-                            selectedDoc && confirmDelete(selectedDoc.id)
-                          }
+                          onClick={() => confirmDelete(selectedDoc.id)}
                           className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium shadow-sm cursor-pointer"
                         >
                           Delete
@@ -1021,9 +1018,9 @@ export default function DocumentsPage({ adminData }: DocumentsPageProps) {
                     {/* Right Side */}
                     <div className="flex gap-3">
                       {/* Archive if Active */}
-                      {!("archived_at" in selectedDoc) && (
+                      {selectedDoc && !("archived_at" in selectedDoc) && (
                         <button
-                          onClick={() => confirmArchive(selectedDoc?.id!)}
+                          onClick={() => confirmArchive(selectedDoc.id)}
                           className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm font-medium shadow-sm cursor-pointer"
                         >
                           Archive User
@@ -1031,9 +1028,9 @@ export default function DocumentsPage({ adminData }: DocumentsPageProps) {
                       )}
 
                       {/* Retrieve if Archived */}
-                      {"archived_at" in selectedDoc && (
+                      {selectedDoc && "archived_at" in selectedDoc && (
                         <button
-                          onClick={() => confirmRetrieve(selectedDoc?.id!)}
+                          onClick={() => confirmRetrieve(selectedDoc.id)}
                           className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium shadow-sm cursor-pointer"
                         >
                           Retrieve User
