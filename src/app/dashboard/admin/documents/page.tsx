@@ -6,10 +6,6 @@ import supabase from "@/utils/Supabase";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { Info } from "lucide-react";
 
-type DocumentsPageProps = {
-  adminData: { id: number; name: string; email: string; role: string } | null;
-};
-
 type UserDoc = {
   id: number;
   first_name: string;
@@ -72,7 +68,9 @@ type UserRow = {
 // Matches full archived_users_documents row
 type ArchivedRow = ArchivedDoc;
 
-export default function DocumentsPage({ adminData }: DocumentsPageProps) {
+export default function DocumentsPage() {
+  const [adminData, _setAdminData] = useState<{ id: number; name: string; email: string; role: string } | null>(null);
+
   const [docs, setDocs] = useState<UserDoc[]>([]);
   // State for archive modal
   const [archiveId, setArchiveId] = useState<number | null>(null);
