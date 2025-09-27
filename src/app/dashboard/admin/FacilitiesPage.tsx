@@ -31,22 +31,14 @@ type Facility = {
   description: string;
   status: "Available" | "Under Maintenance" | "Reserved";
   created_at: string;
-  admin_id?: number; // FK admin
+  admin_id?: number;
   admins?: {
     id: number;
     name: string;
     email: string;
   } | null;
-};
 
-type ReservationUser = {
-  id: number;
-  first_name: string;
-  middle_name?: string | null;
-  last_name: string;
-  email: string;
-  contact_number: string;
-  address: string;
+  facility_reservations?: FacilityReservation[];
 };
 
 type FacilityReservation = {
@@ -55,7 +47,15 @@ type FacilityReservation = {
   start_time: string;
   end_time: string;
   created_at: string;
-  users: ReservationUser;
+  users?: {
+    id: number;
+    first_name: string;
+    middle_name?: string | null;
+    last_name: string;
+    email: string;
+    contact_number: string;
+    address: string;
+  };
 };
 
 // Admin Details
@@ -81,7 +81,7 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
   // Wizard state
   const [step, setStep] = useState<number>(1);
   const [formError, setFormError] = useState<string | null>(null);
-  const [creating, setCreating] = useState<boolean>(false);
+  const [_creating, setCreating] = useState<boolean>(false);
 
   //Delete modal
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
