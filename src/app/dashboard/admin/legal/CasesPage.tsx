@@ -93,7 +93,7 @@ export default function CasesPage({ adminData }: CasesPageProps) {
     closed_date: "",
     status: "Open",
     document_url: "",
-    user_id: null, 
+    user_id: null,
   });
 
   // Approved Users/Clients
@@ -190,16 +190,16 @@ export default function CasesPage({ adminData }: CasesPageProps) {
     setCaseForm({
       case_number: selectedCase.case_number,
       title: selectedCase.title,
-      description: selectedCase.description,
+      description: selectedCase.description || "", 
       case_type: selectedCase.case_type,
       filed_date: selectedCase.filed_date,
-      closed_date: selectedCase.closed_date,
+      closed_date: selectedCase.closed_date || "",
       status: selectedCase.status,
       document_url: selectedCase.document_url || "",
       user_id: selectedCase.user_id ?? null,
     });
 
-    setEditingId(selectedCase.id); // ✅ mark as editing
+    setEditingId(selectedCase.id);
     setCaseStep(1);
     setShowCaseWizard(true);
   };
@@ -313,7 +313,7 @@ export default function CasesPage({ adminData }: CasesPageProps) {
         }
       }
 
-      saveCase(); 
+      saveCase();
     }
   }
 
