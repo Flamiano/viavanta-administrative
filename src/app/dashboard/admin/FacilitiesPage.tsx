@@ -977,34 +977,44 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* LEFT SIDE – User Info */}
                     <div className="space-y-3">
-                      <p>
-                        <span className="font-medium text-gray-700">Name:</span>{" "}
-                        <br />
-                        {selectedReservation.users.first_name}{" "}
-                        {selectedReservation.users.middle_name || ""}{" "}
-                        {selectedReservation.users.last_name}
-                      </p>
-                      <p>
-                        <span className="font-medium text-gray-700">
-                          Email:
-                        </span>{" "}
-                        <br />
-                        {selectedReservation.users.email}
-                      </p>
-                      <p>
-                        <span className="font-medium text-gray-700">
-                          Contact:
-                        </span>{" "}
-                        <br />
-                        {selectedReservation.users.contact_number}
-                      </p>
-                      <p>
-                        <span className="font-medium text-gray-700">
-                          Address:
-                        </span>{" "}
-                        <br />
-                        {selectedReservation.users.address}
-                      </p>
+                      {selectedReservation?.users ? (
+                        <>
+                          <p>
+                            <span className="font-medium text-gray-700">
+                              Name:
+                            </span>
+                            <br />
+                            {selectedReservation.users.first_name}{" "}
+                            {selectedReservation.users.middle_name ?? ""}{" "}
+                            {selectedReservation.users.last_name}
+                          </p>
+                          <p>
+                            <span className="font-medium text-gray-700">
+                              Email:
+                            </span>
+                            <br />
+                            {selectedReservation.users.email}
+                          </p>
+                          <p>
+                            <span className="font-medium text-gray-700">
+                              Contact:
+                            </span>
+                            <br />
+                            {selectedReservation.users.contact_number}
+                          </p>
+                          <p>
+                            <span className="font-medium text-gray-700">
+                              Address:
+                            </span>
+                            <br />
+                            {selectedReservation.users.address}
+                          </p>
+                        </>
+                      ) : (
+                        <p className="text-gray-500 italic">
+                          User information not available.
+                        </p>
+                      )}
                     </div>
 
                     {/* RIGHT SIDE – Reservation Info */}
