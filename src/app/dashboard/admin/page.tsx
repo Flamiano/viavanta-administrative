@@ -15,6 +15,7 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  PieLabelRenderProps,
   PieChart,
   Pie,
   Cell,
@@ -69,16 +70,6 @@ type User = {
   created_at: string;
 };
 
-// Facility reservations
-type FacilityReservation = {
-  id: number;
-  user_id: number;
-  facility_id: number;
-  reservation_date: string;
-  start_time: string;
-  end_time: string;
-};
-
 // Visitors
 type Visitor = {
   id: number;
@@ -129,11 +120,12 @@ type ComplianceRecord = {
   created_at: string;
 };
 
-// Define menu item type
-type MenuItem = {
-  name: string;
-  icon: (props: React.SVGProps<SVGSVGElement>) => React.ReactElement;
-  items?: MenuItem[];
+type FacilityReservationDisplay = {
+  id: number;
+  start_time: string;
+  end_time: string;
+  car_unit: string;
+  user_name: string;
 };
 
 export default function AdminDashboard() {
@@ -280,7 +272,7 @@ export default function AdminDashboard() {
   // Lists for tables
   const [usersTodayList, setUsersTodayList] = useState<User[]>([]);
   const [facilitiesTodayList, setFacilitiesTodayList] = useState<
-    FacilityReservation[]
+    FacilityReservationDisplay[]
   >([]);
   const [visitorsTodayList, setVisitorsTodayList] = useState<Visitor[]>([]);
   const [_contractsTodayList, setContractsTodayList] = useState<Contract[]>([]);
@@ -360,101 +352,147 @@ export default function AdminDashboard() {
 
     const fetchDashboardData = async () => {
       const today = new Date();
-      const startOfDay = new Date(today);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(today);
-      endOfDay.setHours(23, 59, 59, 999);
+      const startOfDayISO = new Date(today);
+      startOfDayISO.setHours(0, 0, 0, 0);
+      const endOfDayISO = new Date(today);
+      endOfDayISO.setHours(23, 59, 59, 999);
+
+      // Format YYYY-MM-DD for date fields
+      const formatDate = (d: Date) => d.toISOString().split("T")[0];
+      const todayDateStr = formatDate(today);
 
       try {
         // USERS
-        const { data: allUsers } = await supabase
-          .from<User>("users")
+        const { data: allUsers, error: allUsersError } = await supabase
+          .from("users")
           .select("*");
+        if (allUsersError)
+          console.error("Fetch all users error:", allUsersError);
         setUsersToday(allUsers?.length || 0);
 
-        const { data: newUsers } = await supabase
-          .from<User>("users")
+        const { data: newUsers, error: newUsersError } = await supabase
+          .from("users")
           .select("*")
-          .gte("created_at", startOfDay.toISOString())
-          .lte("created_at", endOfDay.toISOString());
+          .gte("created_at", startOfDayISO.toISOString())
+          .lte("created_at", endOfDayISO.toISOString());
+        if (newUsersError)
+          console.error("Fetch new users error:", newUsersError);
         setUsersTodayNew(newUsers?.length || 0);
         setUsersTodayList(newUsers || []);
 
         // FACILITIES
-        const { data: allFacilities } = await supabase
-          .from<FacilityReservation>("facility_reservations")
-          .select("*");
-        setFacilitiesToday(allFacilities?.length || 0);
+        const { data: newFacilities, error: newFacilitiesError } =
+          await supabase
+            .from("facility_reservations")
+            .select(
+              `
+                id,
+                start_time,
+                end_time,
+                reservation_date,
+                users!facility_reservations_user_id_fkey(first_name, last_name),
+                facilities!facility_reservations_facility_id_fkey(car_unit)
+              `
+            )
+            .gte("reservation_date", todayDateStr)
+            .lte("reservation_date", todayDateStr);
 
-        const { data: newFacilities } = await supabase
-          .from<FacilityReservation>("facility_reservations")
-          .select("*")
-          .gte("reservation_date", startOfDay.toISOString())
-          .lte("reservation_date", endOfDay.toISOString());
-        setFacilitiesTodayNew(newFacilities?.length || 0);
-        setFacilitiesTodayList(newFacilities || []);
+        if (newFacilitiesError) console.error(newFacilitiesError);
+
+        // Flatten for table display
+        const facilitiesDisplay: FacilityReservationDisplay[] =
+          (newFacilities as any[] | undefined)?.map((res) => ({
+            id: res.id,
+            start_time: res.start_time,
+            end_time: res.end_time,
+            car_unit: res.facilities?.car_unit || "",
+            user_name: res.users
+              ? `${res.users.first_name} ${res.users.last_name}`
+              : "",
+          })) || [];
+
+        setFacilitiesTodayList(facilitiesDisplay);
 
         // VISITORS
-        const { data: allVisitors } = await supabase
-          .from<Visitor>("visitors")
+        const { data: allVisitors, error: allVisitorsError } = await supabase
+          .from("visitors")
           .select("*");
+        if (allVisitorsError)
+          console.error("Fetch all visitors error:", allVisitorsError);
         setVisitorsToday(allVisitors?.length || 0);
 
-        const { data: newVisitors } = await supabase
-          .from<Visitor>("visitors")
+        const { data: newVisitors, error: newVisitorsError } = await supabase
+          .from("visitors")
           .select("*")
-          .gte("visit_date", startOfDay.toISOString())
-          .lte("visit_date", endOfDay.toISOString());
+          .gte("visit_date", todayDateStr)
+          .lte("visit_date", todayDateStr);
+        if (newVisitorsError)
+          console.error("Fetch new visitors error:", newVisitorsError);
         setVisitorsTodayNew(newVisitors?.length || 0);
         setVisitorsTodayList(newVisitors || []);
 
         // CONTRACTS
-        const { data: allContracts } = await supabase
-          .from<Contract>("contracts")
+        const { data: allContracts, error: allContractsError } = await supabase
+          .from("contracts")
           .select("*");
+        if (allContractsError)
+          console.error("Fetch all contracts error:", allContractsError);
         setContractsCount(allContracts?.length || 0);
 
-        const { data: newContracts } = await supabase
-          .from<Contract>("contracts")
+        const { data: newContracts, error: newContractsError } = await supabase
+          .from("contracts")
           .select("*")
-          .gte("created_at", startOfDay.toISOString())
-          .lte("created_at", endOfDay.toISOString());
+          .gte("created_at", startOfDayISO.toISOString())
+          .lte("created_at", endOfDayISO.toISOString());
+        if (newContractsError)
+          console.error("Fetch new contracts error:", newContractsError);
         setContractsTodayList(newContracts || []);
 
         // CASES
-        const { data: allCases } = await supabase
-          .from<CaseRecord>("cases")
+        const { data: allCases, error: allCasesError } = await supabase
+          .from("cases")
           .select("*");
+        if (allCasesError)
+          console.error("Fetch all cases error:", allCasesError);
         setCasesCount(allCases?.length || 0);
 
-        const { data: newCases } = await supabase
-          .from<CaseRecord>("cases")
+        const { data: newCases, error: newCasesError } = await supabase
+          .from("cases")
           .select("*")
-          .gte("created_at", startOfDay.toISOString())
-          .lte("created_at", endOfDay.toISOString());
+          .gte("created_at", startOfDayISO.toISOString())
+          .lte("created_at", endOfDayISO.toISOString());
+        if (newCasesError)
+          console.error("Fetch new cases error:", newCasesError);
         setCasesTodayList(newCases || []);
 
         // COMPLIANCE
-        const { data: allCompliance } = await supabase
-          .from<ComplianceRecord>("compliance_records")
-          .select("*");
+        const { data: allCompliance, error: allComplianceError } =
+          await supabase.from("compliance_records").select("*");
+        if (allComplianceError)
+          console.error("Fetch all compliance error:", allComplianceError);
         setComplianceCount(allCompliance?.length || 0);
 
-        const { data: newCompliance } = await supabase
-          .from<ComplianceRecord>("compliance_records")
-          .select("*")
-          .gte("created_at", startOfDay.toISOString())
-          .lte("created_at", endOfDay.toISOString());
+        const { data: newCompliance, error: newComplianceError } =
+          await supabase
+            .from("compliance_records")
+            .select("*")
+            .gte("created_at", startOfDayISO.toISOString())
+            .lte("created_at", endOfDayISO.toISOString());
+        if (newComplianceError)
+          console.error("Fetch new compliance error:", newComplianceError);
         setComplianceTodayList(newCompliance || []);
 
         // PENDING USERS
-        const { count: pendingCount } = await supabase
-          .from<User>("users")
-          .select("id", { count: "exact" })
-          .eq("approval_status", "Pending");
-        setPendingDocuments(pendingCount || 0);
+        const { count: pendingUsersCount, error: pendingUsersError } =
+          await supabase
+            .from("users")
+            .select("id", { count: "exact" })
+            .eq("approval_status", "Pending");
+        if (pendingUsersError)
+          console.error("Fetch pending users count error:", pendingUsersError);
+        setPendingDocuments(pendingUsersCount || 0);
       } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+        console.error("Unexpected error fetching dashboard data:", error);
       }
     };
 
@@ -695,6 +733,12 @@ export default function AdminDashboard() {
       ],
     },
   ];
+
+  type MenuItem = {
+    name: string;
+    icon: React.FC<React.SVGProps<SVGSVGElement>>;
+    items?: MenuItem[];
+  };
 
   const bottomMenu: MenuItem[] = [
     { name: "Settings", icon: SettingsIcon },
@@ -1373,15 +1417,17 @@ export default function AdminDashboard() {
                                   cy="50%"
                                   outerRadius={80}
                                   labelLine={false}
-                                  label={({ name, value }) =>
-                                    `${name} (${(
-                                      (value /
-                                        (usersToday +
-                                          visitorsToday +
-                                          facilitiesToday || 1)) *
+                                  label={(props: PieLabelRenderProps) => {
+                                    const { name, value } = props;
+                                    const total =
+                                      usersToday +
+                                        visitorsToday +
+                                        facilitiesToday || 1;
+                                    return `${name} (${(
+                                      (Number(value) / total) *
                                       100
-                                    ).toFixed(0)}%)`
-                                  }
+                                    ).toFixed(0)}%)`;
+                                  }}
                                 >
                                   {[
                                     visitorsToday,
@@ -1439,13 +1485,10 @@ export default function AdminDashboard() {
                                       fill: COLORS[2],
                                     },
                                   ]}
+                                  startAngle={90} // start from top
+                                  endAngle={-270} // clockwise
                                 >
-                                  <RadialBar
-                                    minAngle={15}
-                                    background
-                                    clockWise
-                                    dataKey="value"
-                                  />
+                                  <RadialBar background dataKey="value" />
                                   <Legend
                                     iconSize={12}
                                     layout="horizontal"
