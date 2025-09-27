@@ -134,10 +134,21 @@ export default function CompliancePage({ adminData }: CompliancePageProps) {
     if (error) {
       console.error("Error fetching compliance:", error);
     } else if (data) {
-      const formattedData = data.map((record: any) => ({
-        ...record,
-        user: record.user?.[0] ?? null, 
+      // Use type assertion to match your existing ComplianceRecord type
+      const formattedData: ComplianceRecord[] = data.map((record) => ({
+        id: record.id,
+        compliance_number: record.compliance_number,
+        category: record.category,
+        title: record.title,
+        description: record.description,
+        due_date: record.due_date,
+        status: record.status,
+        document_url: record.document_url,
+        created_at: record.created_at,
+        updated_at: record.updated_at,
+        user: record.user?.[0] ?? null,
         admin: record.admin?.[0] ?? null,
+        user_id: record.user?.[0]?.id ?? undefined, 
       }));
 
       setCompliance(formattedData);
