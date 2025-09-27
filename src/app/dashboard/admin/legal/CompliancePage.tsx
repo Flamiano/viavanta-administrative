@@ -25,22 +25,6 @@ type AdminData = {
   role: string;
 } | null;
 
-type SupabaseComplianceRecord = {
-  id: number;
-  compliance_number: string;
-  category: string;
-  title: string;
-  description: string;
-  due_date: string;
-  status: string;
-  document_url?: string;
-  created_at: string;
-  updated_at: string;
-  user_id?: number;
-  user?: { id: number; first_name: string; last_name: string; email: string }[];
-  admin?: { id: number; name: string; email: string }[];
-};
-
 type ComplianceRecord = {
   id: number;
   compliance_number: string;
@@ -55,6 +39,27 @@ type ComplianceRecord = {
   user_id?: number;
   user?: { id: number; first_name: string; last_name: string; email: string };
   admin?: { id: number; name: string; email: string };
+};
+
+type SupabaseComplianceRecord = {
+  id: number;
+  compliance_number: string;
+  category: string;
+  title: string;
+  description: string;
+  due_date: string;
+  status: string;
+  document_url?: string;
+  created_at: string;
+  updated_at: string;
+  user?: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+  } | null;
+  admin?: { id: number; name: string; email: string } | null;
+  user_id?: number;
 };
 
 type CompliancePageProps = {
@@ -123,36 +128,42 @@ export default function CompliancePage({ adminData }: CompliancePageProps) {
   const fetchCompliance = async () => {
     setLoading(true);
 
-    const { data, error } = await supabase.from("compliance_records").select(`
-      id,
-      compliance_number,
-      category,
-      title,
-      description,
-      due_date,
-      status,
-      document_url,
-      created_at,
-      updated_at,
-      user:user_id (
+    const { data, error } = (await supabase.from("compliance_records").select(`
         id,
-        first_name,
-        last_name,
-        email
-      ),
-      admin:admin_id (
-        id,
-        name,
-        email
-      )
-    `);
+        compliance_number,
+        category,
+        title,
+        description,
+        due_date,
+        status,
+        document_url,
+        created_at,
+        updated_at,
+        user:user_id (
+          id,
+          first_name,
+          last_name,
+          email
+        ),
+        admin:admin_id (
+          id,
+          name,
+          email
+        )
+      `)) as {
+      data: (SupabaseComplianceRecord | null)[] | null;
+      error: any;
+    };
 
     if (error) {
       console.error("Error fetching compliance:", error);
     } else if (data) {
-      console.log("Fetched compliance data:", data); // Debugging
+      // Filter out null records just in case
+      const records = data.filter(
+        (r): r is SupabaseComplianceRecord => r !== null
+      );
 
-      const formattedData: ComplianceRecord[] = data.map((record) => ({
+      const formattedData: ComplianceRecord[] = records.map((record) => ({
         id: record.id,
         compliance_number: record.compliance_number,
         category: record.category,
@@ -160,11 +171,12 @@ export default function CompliancePage({ adminData }: CompliancePageProps) {
         description: record.description,
         due_date: record.due_date,
         status: record.status,
-        document_url: record.document_url,
+        document_url: record.document_url ?? "",
         created_at: record.created_at,
         updated_at: record.updated_at,
-        user: record.user ?? [],
-        admin: record.admin ?? [],
+        user: record.user ?? undefined,
+        admin: record.admin ?? undefined,
+        user_id: record.user?.id ?? record.user_id,
       }));
 
       setCompliance(formattedData);
