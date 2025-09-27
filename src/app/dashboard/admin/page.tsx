@@ -132,7 +132,7 @@ type ComplianceRecord = {
 // Define menu item type
 type MenuItem = {
   name: string;
-  icon: (props: React.ComponentProps<"svg">) => JSX.Element; // Lucide-react icon type
+  icon: (props: React.SVGProps<SVGSVGElement>) => React.ReactElement;
   items?: MenuItem[];
 };
 
