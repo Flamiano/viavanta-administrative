@@ -50,7 +50,7 @@ import FacilitiesPage from "./FacilitiesPage";
 import DocumentsPage from "./DocumentsPage";
 import AdminMessage from "./AdminMessage";
 import VisitorsPage from "./VisitorsPage";
-import LegalPage from "./legal/page";
+import LegalPage from "./legal/LegalPage";
 import AdminFooter from "@/comps/user-admin-footer/page";
 
 // Users
