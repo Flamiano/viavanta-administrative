@@ -122,8 +122,8 @@ const VisitorsModal = ({
         visit_date: editingVisitor.visit_date
           ? new Date(editingVisitor.visit_date).toISOString().split("T")[0]
           : "",
-        status: editingVisitor.status ?? "",
-        remarks: editingVisitor.remarks ?? "", // ✅ ALWAYS string
+        status: editingVisitor.status ?? "Expected",
+        remarks: editingVisitor.remarks ?? null, 
       });
     } else {
       setForm(initialVisitorForm);
@@ -352,7 +352,7 @@ const VisitorsModal = ({
                             ...f,
                             remarks: e.target.value
                               ? (e.target.value as Visitor["remarks"])
-                              : null, // ✅ allow null
+                              : null, 
                           }))
                         }
                         className="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
@@ -869,15 +869,15 @@ const VisitorsPage: React.FC<VisitorsPageProps> = ({ adminData }) => {
                   <td className="px-4 py-2 border">{v.name}</td>
                   <td className="px-4 py-2 border">{v.contact_number}</td>
                   <td className="px-4 py-2 border">
-                    <Badge text={v.purpose} type="purpose" />
+                    <Badge text={v.purpose}/>
                   </td>
                   <td className="px-4 py-2 border">{v.visit_date}</td>
                   <td className="px-4 py-2 border">
-                    <Badge text={v.status} type="status" />
+                    <Badge text={v.status}/>
                   </td>
                   <td className="px-4 py-2 border">
                     {v.remarks ? (
-                      <Badge text={v.remarks} type="remarks" />
+                      <Badge text={v.remarks} />
                     ) : (
                       "-"
                     )}
