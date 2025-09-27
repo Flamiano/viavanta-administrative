@@ -53,6 +53,8 @@ interface User {
     name: string;
     email: string;
   } | null;
+
+  approved_at?: string | null;
 }
 
 interface FormData {
@@ -166,11 +168,18 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
       setDeleting(true); // start loading
       const userToDelete = users.find((u) => u.id === deleteId);
 
+      if (!userToDelete) {
+        console.error("User to delete not found");
+        setDeleting(false);
+        return;
+      }
+
       // 1. Delete from DB
       const { error } = await supabase
         .from("users")
         .delete()
         .eq("id", deleteId);
+
       if (error) throw error;
 
       // 2. Remove locally
@@ -281,14 +290,14 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
     try {
       setLoading(true);
 
-      const { data, error } = await supabase.from<User>("users").select(`
-      *,
-      approved_by_admin:approved_by (
-        id,
-        name,
-        email
-      )
-    `);
+      const { data, error } = await supabase.from("users").select(`
+        *,
+        approved_by_admin:approved_by (
+          id,
+          name,
+          email
+        )
+      `);
 
       if (error) throw new Error(error.message);
 
@@ -306,10 +315,12 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
         valid_id_back_url: u.valid_id_back_url
           ? getPublicUrl(u.valid_id_back_url)
           : null,
+        approved_by_admin: u.approved_by_admin || null, // ensure not undefined
       }));
 
       setUsers(usersWithImages || []);
     } catch (err) {
+      console.error("Error fetching users:", err);
       if (err instanceof Error) {
         setError(err.message);
       } else {
@@ -695,8 +706,23 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
                   <td className="px-4 py-2 border text-center">
                     <button
                       onClick={() => {
+                        if (!user) return;
+
                         setSelectedUser(user);
-                        setForm(user);
+                        setForm({
+                          first_name: user.first_name,
+                          middle_name: user.middle_name || "",
+                          last_name: user.last_name,
+                          birthday: user.birthday,
+                          age: user.age || "",
+                          contact_number: user.contact_number,
+                          address: user.address,
+                          zipcode: user.zipcode,
+                          email: user.email,
+                          password: "", 
+                          confirm: "", 
+                          approval_status: user.approval_status || "Pending",
+                        });
                         setShowEditModal(true);
                       }}
                       className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer"
@@ -1299,15 +1325,18 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
                             onChange={(e) =>
                               setForm({
                                 ...form,
-                                approval_status: e.target.value,
+                                approval_status: e.target.value as
+                                  | "Pending"
+                                  | "Approved"
+                                  | "",
                               })
                             }
                             className="mt-1 w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
                           >
                             <option value="Pending">Pending</option>
                             <option value="Approved">Approved</option>
-                            <option value="Declined">Declined</option>
                           </select>
+
                           {/* Small gray text */}
                           <p className="text-xs text-gray-500 mt-1">
                             If approved, the user will receive an email
