@@ -25,6 +25,22 @@ type AdminData = {
   role: string;
 } | null;
 
+type SupabaseComplianceRecord = {
+  id: number;
+  compliance_number: string;
+  category: string;
+  title: string;
+  description: string;
+  due_date: string;
+  status: string;
+  document_url?: string;
+  created_at: string;
+  updated_at: string;
+  user_id?: number;
+  user?: { id: number; first_name: string; last_name: string; email: string }[];
+  admin?: { id: number; name: string; email: string }[];
+};
+
 type ComplianceRecord = {
   id: number;
   compliance_number: string;
@@ -108,33 +124,34 @@ export default function CompliancePage({ adminData }: CompliancePageProps) {
     setLoading(true);
 
     const { data, error } = await supabase.from("compliance_records").select(`
+      id,
+      compliance_number,
+      category,
+      title,
+      description,
+      due_date,
+      status,
+      document_url,
+      created_at,
+      updated_at,
+      user:user_id (
         id,
-        compliance_number,
-        category,
-        title,
-        description,
-        due_date,
-        status,
-        document_url,
-        created_at,
-        updated_at,
-        user:user_id (
-          id,
-          first_name,
-          last_name,
-          email
-        ),
-        admin:admin_id (
-          id,
-          name,
-          email
-        )
-      `);
+        first_name,
+        last_name,
+        email
+      ),
+      admin:admin_id (
+        id,
+        name,
+        email
+      )
+    `);
 
     if (error) {
       console.error("Error fetching compliance:", error);
     } else if (data) {
-      // Use type assertion to match your existing ComplianceRecord type
+      console.log("Fetched compliance data:", data); // Debugging
+
       const formattedData: ComplianceRecord[] = data.map((record) => ({
         id: record.id,
         compliance_number: record.compliance_number,
@@ -146,9 +163,8 @@ export default function CompliancePage({ adminData }: CompliancePageProps) {
         document_url: record.document_url,
         created_at: record.created_at,
         updated_at: record.updated_at,
-        user: record.user?.[0] ?? null,
-        admin: record.admin?.[0] ?? null,
-        user_id: record.user?.[0]?.id ?? undefined, 
+        user: record.user ?? null,
+        admin: record.admin ?? null,
       }));
 
       setCompliance(formattedData);
@@ -749,12 +765,23 @@ export default function CompliancePage({ adminData }: CompliancePageProps) {
                   </td>
                   <td className="px-4 py-2 border">{c.category}</td>
                   <td className="px-4 py-2 border">{c.status}</td>
-                  <td className="px-4 py-2 border">
+                  <td
+                    className="px-4 py-2 border max-w-xs truncate"
+                    title={
+                      c.user
+                        ? `${c.user.first_name} ${c.user.last_name} (${c.user.email})`
+                        : ""
+                    }
+                  >
                     {c.user ? `${c.user.first_name} ${c.user.last_name}` : "-"}
                   </td>
-                  <td className="px-4 py-2 border">
+                  <td
+                    className="px-4 py-2 border max-w-xs truncate"
+                    title={c.admin ? `${c.admin.name} (${c.admin.email})` : ""}
+                  >
                     {c.admin ? c.admin.name : "-"}
                   </td>
+
                   <td className="px-4 py-2 border">
                     {c.due_date
                       ? new Date(c.due_date).toLocaleDateString()

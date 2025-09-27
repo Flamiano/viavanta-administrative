@@ -283,9 +283,9 @@ export default function AdminDashboard() {
     FacilityReservation[]
   >([]);
   const [visitorsTodayList, setVisitorsTodayList] = useState<Visitor[]>([]);
-  const [contractsTodayList, setContractsTodayList] = useState<Contract[]>([]);
-  const [casesTodayList, setCasesTodayList] = useState<CaseRecord[]>([]);
-  const [complianceTodayList, setComplianceTodayList] = useState<
+  const [_contractsTodayList, setContractsTodayList] = useState<Contract[]>([]);
+  const [_casesTodayList, setCasesTodayList] = useState<CaseRecord[]>([]);
+  const [_complianceTodayList, setComplianceTodayList] = useState<
     ComplianceRecord[]
   >([]);
 
@@ -294,11 +294,6 @@ export default function AdminDashboard() {
     { date: string; users: number; facilities: number; visitors: number }[]
   >([]);
 
-  const pieData = [
-    { name: "Visitors", value: visitorsToday },
-    { name: "Users", value: usersToday },
-    { name: "Facilities", value: facilitiesToday },
-  ];
   const COLORS = ["#8884d8", "#82ca9d", "#ffc658"];
 
   // Fetching 3 circle components (Approved, Archived, Pending)

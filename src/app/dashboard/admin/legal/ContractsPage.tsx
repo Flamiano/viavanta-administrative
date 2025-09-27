@@ -97,13 +97,13 @@ export default function ContractsPage({ adminData }: ContractsPageProps) {
     setLoading(true);
 
     const { data, error } = await supabase.from("contracts").select(`
-      *,
-      admins (
-        id,
-        name,
-        email
-      )
-    `);
+        *,
+        admin:admin_id (
+          id,
+          name,
+          email
+        )
+      `);
 
     if (error) {
       console.error("Error fetching contracts:", error);
@@ -694,7 +694,7 @@ export default function ContractsPage({ adminData }: ContractsPageProps) {
                       "—"
                     )}
                   </td>
-                  <td className="px-4 py-2 border">{c.admins?.name || "NA"}</td>
+                  <td className="px-4 py-2 border">{c.admin?.name || "NA"}</td>
                   <td className="px-4 py-2 border text-center space-x-2">
                     <button
                       onClick={() => handleEdit(c.id)}
