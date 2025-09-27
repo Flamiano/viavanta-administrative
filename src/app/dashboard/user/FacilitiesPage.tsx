@@ -759,7 +759,7 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
                       sizes="(max-width: 768px) 100vw,
                      (max-width: 1200px) 50vw,
                      25vw"
-                      priority={index === 0} 
+                      priority={index === 0}
                     />
                   </div>
 

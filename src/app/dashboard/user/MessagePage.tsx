@@ -186,7 +186,7 @@ export default function MessagePage({ userData }: MessagePageProps) {
                           <Image
                             src="/logo/logo-white-bg.png"
                             alt="Admin"
-                            width={28} 
+                            width={28}
                             height={28}
                             className="w-full h-full object-cover"
                           />
