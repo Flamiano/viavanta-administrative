@@ -17,6 +17,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import supabase from "@/utils/Supabase";
+import { PostgrestError } from "@supabase/supabase-js"; // add this at the top
 
 type AdminData = {
   id: number;
@@ -128,37 +129,36 @@ export default function CompliancePage({ adminData }: CompliancePageProps) {
   const fetchCompliance = async () => {
     setLoading(true);
 
-    const { data, error } = (await supabase.from("compliance_records").select(`
+    const response = await supabase.from("compliance_records").select(`
+      id,
+      compliance_number,
+      category,
+      title,
+      description,
+      due_date,
+      status,
+      document_url,
+      created_at,
+      updated_at,
+      user:user_id (
         id,
-        compliance_number,
-        category,
-        title,
-        description,
-        due_date,
-        status,
-        document_url,
-        created_at,
-        updated_at,
-        user:user_id (
-          id,
-          first_name,
-          last_name,
-          email
-        ),
-        admin:admin_id (
-          id,
-          name,
-          email
-        )
-      `)) as {
-      data: (SupabaseComplianceRecord | null)[] | null;
-      error: any;
-    };
+        first_name,
+        last_name,
+        email
+      ),
+      admin:admin_id (
+        id,
+        name,
+        email
+      )
+    `);
+
+    const data = response.data as (SupabaseComplianceRecord | null)[] | null;
+    const error: PostgrestError | null = response.error;
 
     if (error) {
       console.error("Error fetching compliance:", error);
     } else if (data) {
-      // Filter out null records just in case
       const records = data.filter(
         (r): r is SupabaseComplianceRecord => r !== null
       );
