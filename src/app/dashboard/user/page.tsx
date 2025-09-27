@@ -28,9 +28,9 @@ import {
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/utils/Supabase";
-import FacilitiesPage from "./facilities/page";
-import LegalPage from "./legal/page";
-import MessagePage from "./message/page";
+import FacilitiesPage from "./FacilitiesPage";
+import LegalPage from "./LegalPage";
+import MessagePage from "./MessagePage";
 import AdminFooter from "@/comps/user-admin-footer/page";
 
 // ---------- Types ----------
