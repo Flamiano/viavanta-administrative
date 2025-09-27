@@ -108,33 +108,39 @@ export default function CompliancePage({ adminData }: CompliancePageProps) {
     setLoading(true);
 
     const { data, error } = await supabase.from("compliance_records").select(`
-      id,
-      compliance_number,
-      category,
-      title,
-      description,
-      due_date,
-      status,
-      document_url,
-      created_at,
-      updated_at,
-      user:user_id (
         id,
-        first_name,
-        last_name,
-        email
-      ),
-      admin:admin_id (
-        id,
-        name,
-        email
-      )
-    `);
+        compliance_number,
+        category,
+        title,
+        description,
+        due_date,
+        status,
+        document_url,
+        created_at,
+        updated_at,
+        user:user_id (
+          id,
+          first_name,
+          last_name,
+          email
+        ),
+        admin:admin_id (
+          id,
+          name,
+          email
+        )
+      `);
 
     if (error) {
       console.error("Error fetching compliance:", error);
     } else if (data) {
-      setCompliance(data);
+      const formattedData = data.map((record: any) => ({
+        ...record,
+        user: record.user?.[0] ?? null, 
+        admin: record.admin?.[0] ?? null,
+      }));
+
+      setCompliance(formattedData);
     }
 
     setLoading(false);
@@ -313,7 +319,7 @@ export default function CompliancePage({ adminData }: CompliancePageProps) {
         return;
       }
 
-      // ✅ Clear errors because everything went fine
+      // Clear errors because everything went fine
       setFormError(null);
 
       // Save uploaded URL in state
@@ -358,7 +364,7 @@ export default function CompliancePage({ adminData }: CompliancePageProps) {
 
     const payload = {
       ...complianceForm,
-      updated_at: new Date().toISOString(), // ✅ set updated_at
+      updated_at: new Date().toISOString(), // set updated_at
       admin_id: adminData.id,
     };
 
