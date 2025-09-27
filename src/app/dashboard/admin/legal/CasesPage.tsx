@@ -33,6 +33,7 @@ type Case = {
   id: number;
   case_number: string;
   title: string;
+  description?: string;
   case_type: string;
   status: string;
   filed_date: string;
