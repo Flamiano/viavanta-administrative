@@ -53,10 +53,9 @@ type ComplianceRecord = {
   created_at: string;
   updated_at: string;
   user_id?: number;
-  user?: { id: number; first_name: string; last_name: string; email: string }[]; 
-  admin?: { id: number; name: string; email: string }[]; 
+  user?: { id: number; first_name: string; last_name: string; email: string };
+  admin?: { id: number; name: string; email: string };
 };
-
 
 type CompliancePageProps = {
   adminData: AdminData;
