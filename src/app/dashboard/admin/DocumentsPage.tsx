@@ -97,7 +97,7 @@ export default function DocumentsPage({ adminData }: DocumentsPageProps) {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [deleteReason, setDeleteReason] = useState("");
   const [deleting, setDeleting] = useState(false);
-  const [setDeleteSuccess] = useState<string | null>(null);
+  const [_deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
 
   // Retrieve
   const [retrieveId, setRetrieveId] = useState<number | null>(null);
