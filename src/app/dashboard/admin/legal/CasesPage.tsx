@@ -92,7 +92,7 @@ export default function CasesPage({ adminData }: CasesPageProps) {
     closed_date: "",
     status: "Open",
     document_url: "",
-    user_id: null, // ✅ default null
+    user_id: null, 
   });
 
   // Approved Users/Clients
@@ -108,7 +108,7 @@ export default function CasesPage({ adminData }: CasesPageProps) {
         return;
       }
 
-      // ✅ Map to "id + full name"
+      // Map to "id and full name"
       const mappedUsers =
         data?.map((u) => ({
           id: u.id,
@@ -312,7 +312,7 @@ export default function CasesPage({ adminData }: CasesPageProps) {
         }
       }
 
-      saveCase(); // ✅ now handles both
+      saveCase(); 
     }
   }
 
@@ -353,7 +353,7 @@ export default function CasesPage({ adminData }: CasesPageProps) {
         return;
       }
 
-      // ✅ Save URL
+      // Save URL
       setUploadedUrl(publicUrl);
       setCaseForm((prev) => ({
         ...prev,

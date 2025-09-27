@@ -68,9 +68,17 @@ type UserRow = {
 // Matches full archived_users_documents row
 type ArchivedRow = ArchivedDoc;
 
-export default function DocumentsPage() {
-  const [adminData, _setAdminData] = useState<{ id: number; name: string; email: string; role: string } | null>(null);
+// Admin Details
+type DocumentsPageProps = {
+  adminData: {
+    id: number;
+    name: string;
+    email: string;
+    role: string;
+  } | null;
+};
 
+export default function DocumentsPage({ adminData }: DocumentsPageProps) {
   const [docs, setDocs] = useState<UserDoc[]>([]);
   // State for archive modal
   const [archiveId, setArchiveId] = useState<number | null>(null);

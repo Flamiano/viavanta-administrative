@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CasesPage from "./cases/page";
-import ContractsPage from "./contracts/page";
-import CompliancePage from "./compliance/page";
+import CasesPage from "./CasesPage";
+import ContractsPage from "./ContractsPage";
+import CompliancePage from "./CompliancePage";
 
 type AdminData = {
   id: number;

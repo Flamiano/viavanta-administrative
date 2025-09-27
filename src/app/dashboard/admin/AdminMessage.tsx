@@ -5,7 +5,6 @@ import supabase from "@/utils/Supabase";
 import { User as UserIcon } from "lucide-react";
 import Image from "next/image";
 
-
 type AdminMessageProps = {
   adminData: {
     id: number;

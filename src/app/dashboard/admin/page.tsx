@@ -45,13 +45,13 @@ import {
   Camera,
   MessageSquare,
 } from "lucide-react";
-import UsersPage from "./userpage/page";
-import FacilitiesPage from "./facilities/page";
-import DocumentsPage from "./documents/page";
-import VisitorsPage from "./visitors/page";
+import UsersPage from "./UsersPage";
+import FacilitiesPage from "./FacilitiesPage";
+import DocumentsPage from "./DocumentsPage";
+import AdminMessage from "./AdminMessage";
+import VisitorsPage from "./VisitorsPage";
 import LegalPage from "./legal/page";
 import AdminFooter from "@/comps/user-admin-footer/page";
-import AdminMessage from "./message/page";
 
 // Users
 type User = {
@@ -177,7 +177,7 @@ export default function AdminDashboard() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [_message, setMessage] = useState("");
 
   // Profile Upload
   const handleProfileUpload = async (
