@@ -84,7 +84,9 @@ export default function DocumentsPage({ adminData }: DocumentsPageProps) {
   const [archiveId, setArchiveId] = useState<number | null>(null);
   const [archiving, setArchiving] = useState(false);
   const [archivedDocs, setArchivedDocs] = useState<ArchivedDoc[]>([]);
-  const [selectedDoc, setSelectedDoc] = useState<UserDoc | null>(null);
+  const [selectedDoc, setSelectedDoc] = useState<UserDoc | ArchivedDoc | null>(
+    null
+  );
   const [open, setOpen] = useState(false);
 
   // State for search & filter
