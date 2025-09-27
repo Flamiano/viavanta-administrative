@@ -53,9 +53,10 @@ type ComplianceRecord = {
   created_at: string;
   updated_at: string;
   user_id?: number;
-  user?: { id: number; first_name: string; last_name: string; email: string };
-  admin?: { id: number; name: string; email: string };
+  user?: { id: number; first_name: string; last_name: string; email: string }[]; 
+  admin?: { id: number; name: string; email: string }[]; 
 };
+
 
 type CompliancePageProps = {
   adminData: AdminData;
@@ -163,8 +164,8 @@ export default function CompliancePage({ adminData }: CompliancePageProps) {
         document_url: record.document_url,
         created_at: record.created_at,
         updated_at: record.updated_at,
-        user: record.user ?? null,
-        admin: record.admin ?? null,
+        user: record.user ?? [],
+        admin: record.admin ?? [],
       }));
 
       setCompliance(formattedData);
