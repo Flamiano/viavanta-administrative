@@ -128,6 +128,20 @@ type FacilityReservationDisplay = {
   user_name: string;
 };
 
+type FacilityReservationFromDB = {
+  id: number;
+  start_time: string;
+  end_time: string;
+  reservation_date: string;
+  users?: {
+    first_name: string;
+    last_name: string;
+  };
+  facilities?: {
+    car_unit: string;
+  };
+};
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [active, setActive] = useState("Dashboard");
@@ -401,7 +415,9 @@ export default function AdminDashboard() {
 
         // Flatten for table display
         const facilitiesDisplay: FacilityReservationDisplay[] =
-          (newFacilities as any[] | undefined)?.map((res) => ({
+          (
+            newFacilities as FacilityReservationFromDB[] | null | undefined
+          )?.map((res) => ({
             id: res.id,
             start_time: res.start_time,
             end_time: res.end_time,
