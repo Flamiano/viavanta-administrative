@@ -78,7 +78,7 @@ type LegalCount = {
 
 type MenuItem = {
   name: string;
-  icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
+  icon: React.FC<React.SVGProps<SVGSVGElement>>;
   items?: MenuItem[];
 };
 
@@ -105,6 +105,14 @@ type User = {
   created_at: string;
 };
 
+type ActivitySummary = {
+  date: string;
+  admins: number;
+  users: number;
+  visitors: number;
+  messages: number;
+};
+
 export default function MasterAdminDashboard() {
   const router = useRouter();
   const [active, setActive] = useState("Dashboard");
@@ -123,7 +131,7 @@ export default function MasterAdminDashboard() {
   const [usersCount, setUsersCount] = useState<number>(0);
   const [visitorsToday, setVisitorsToday] = useState<number>(0);
   const [recentMessagesCount, setRecentMessagesCount] = useState<number>(0);
-  const [activityData, setActivityData] = useState<Activity[]>([]);
+  const [activityData, setActivityData] = useState<ActivitySummary[]>([]);
   const [recentUsers, setRecentUsers] = useState<User[]>([]);
   const [usersByStatus, setUsersByStatus] = useState<UserStatus[]>([]);
   const [legalCounts, setLegalCounts] = useState<LegalCount[]>([]);
@@ -197,7 +205,7 @@ export default function MasterAdminDashboard() {
 
         // Fetch recent users
         const { data: usersData, error: usersError } = await supabase
-          .from<User>("users")
+          .from("users")
           .select("*")
           .order("created_at", { ascending: false })
           .limit(10);
@@ -210,7 +218,7 @@ export default function MasterAdminDashboard() {
 
         // Users by Status (Approved, Declined, Pending)
         const { data: statusData, error: statusError } = await supabase
-          .from<User>("users")
+          .from("users")
           .select("approval_status, id");
 
         if (statusError) {
@@ -875,14 +883,11 @@ export default function MasterAdminDashboard() {
                         innerRadius="20%"
                         outerRadius="90%"
                         barSize={14}
-                        data={legalCounts} // includes fill
+                        data={legalCounts}
+                        startAngle={90}
+                        endAngle={-270}
                       >
-                        <RadialBar
-                          minAngle={15}
-                          background
-                          clockWise
-                          dataKey="value"
-                        />
+                        <RadialBar background dataKey="value" />
                         <Legend
                           iconSize={12}
                           layout="horizontal"
@@ -911,7 +916,7 @@ export default function MasterAdminDashboard() {
                       <PieChart>
                         <Pie
                           data={usersByStatus}
-                          dataKey="count"
+                          dataKey="value"
                           nameKey="status"
                           cx="50%"
                           cy="50%"
@@ -919,9 +924,19 @@ export default function MasterAdminDashboard() {
                           label
                         >
                           {usersByStatus.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={
+                                entry.status === "Approved"
+                                  ? "#4ade80" // green
+                                  : entry.status === "Declined"
+                                  ? "#f87171" // red
+                                  : "#facc15" // yellow
+                              }
+                            />
                           ))}
                         </Pie>
+
                         <Tooltip
                           contentStyle={{
                             backgroundColor: "#1f2937",
@@ -2467,7 +2482,7 @@ function ChartCard<T>({
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            {children}
+            <>{children}</>
           </ResponsiveContainer>
         )}
       </div>
