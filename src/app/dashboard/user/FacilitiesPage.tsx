@@ -22,9 +22,16 @@ import supabase from "@/utils/Supabase";
 
 interface Facility {
   id: number;
-  name: string;
   category: "VIP" | "Premium" | "Standard";
-  status: "Available" | "Reserved";
+  car_unit: string;
+  plate_number: string;
+  pickup_location: string;
+  driver_name: string;
+  driver_number: string;
+  description?: string;
+  status: "Available" | "Reserved" | "Under Maintenance";
+  capacity?: number; 
+  errors?: string[];
 }
 
 interface Reservation {
@@ -152,7 +159,7 @@ export default function FacilitiesPage({ userData }: FacilitiesPageProps) {
     const { data: reservationInsert, error: reservationError } = await supabase
       .from("facility_reservations")
       .insert({
-        user_id: userData.id,
+        user_id: userData?.id,
         facility_id: selectedFacility.id,
         reservation_date: today,
         start_time: selectedTime,
