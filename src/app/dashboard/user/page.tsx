@@ -55,7 +55,15 @@ interface User {
   cases_count?: number;
   compliances_count?: number;
   activity_data?: ActivityRecord[];
-  records?: UserRecord[]; // 👈 add this
+  records?: UserRecord[];
+  birthday?: string | null;
+  age?: number | null;
+  contact_number?: string | null;
+  address?: string | null;
+  zipcode?: string | null;
+  approval_status?: "Pending" | "Approved" | "Declined" | null;
+  approved_at?: string | null;
+  created_at?: string | null;
 }
 
 interface Facility {
@@ -97,9 +105,11 @@ interface ActivityRecord {
 
 interface UserRecord {
   id: number;
-  title: string;
+  name: string;
+  type: string;
+  status: string;
+  date: string;
   description?: string;
-  date?: string;
 }
 
 export default function UserDashboardPage() {
@@ -124,9 +134,27 @@ export default function UserDashboardPage() {
   );
 
   useEffect(() => {
-    const tabTitle = pageTitles[active] || "";
+    let tabTitle = "";
+
+    switch (active) {
+      case "Dashboard":
+        tabTitle = "Users";
+        break;
+      case "Facilities":
+        tabTitle = "Facilities";
+        break;
+      case "Legal":
+        tabTitle = "Legal";
+        break;
+      case "Settings":
+        tabTitle = "Settings";
+        break;
+      default:
+        tabTitle = "";
+    }
+
     document.title = tabTitle ? `ViaVanta - ${tabTitle}` : "ViaVanta";
-  }, [active, pageTitles]);
+  }, [active]);
 
   // Profile update form states
   const [newName, setNewName] = useState("");
@@ -900,7 +928,7 @@ export default function UserDashboardPage() {
                         <input
                           type="date"
                           className="w-full border px-3 py-2 rounded-md"
-                          value={userData.birthday}
+                          value={userData?.birthday || ""}
                           disabled
                         />
                       </div>
@@ -920,7 +948,7 @@ export default function UserDashboardPage() {
                         <input
                           type="number"
                           className="w-full border px-3 py-2 rounded-md"
-                          value={userData.age}
+                          value={userData?.age || ""}
                           disabled
                         />
                       </div>
@@ -941,7 +969,7 @@ export default function UserDashboardPage() {
                         <input
                           type="text"
                           className="w-full border px-3 py-2 rounded-md"
-                          value={userData.contact_number}
+                          value={userData?.contact_number || ""}
                           disabled
                         />
                       </div>
@@ -963,7 +991,7 @@ export default function UserDashboardPage() {
                         <input
                           type="text"
                           className="w-full border px-3 py-2 rounded-md"
-                          value={userData.address}
+                          value={userData?.address || ""}
                           disabled
                         />
                       </div>
@@ -985,7 +1013,7 @@ export default function UserDashboardPage() {
                         <input
                           type="text"
                           className="w-full border px-3 py-2 rounded-md"
-                          value={userData.zipcode}
+                          value={userData?.zipcode || ""}
                           disabled
                         />
                       </div>
@@ -1099,7 +1127,9 @@ export default function UserDashboardPage() {
 
                     <p>
                       Registered At:{" "}
-                      {new Date(userData.created_at).toLocaleString()}
+                      {userData.created_at
+                        ? new Date(userData.created_at).toLocaleString()
+                        : "N/A"}
                     </p>
                   </div>
                 </div>
@@ -1179,7 +1209,7 @@ export default function UserDashboardPage() {
               {/* Update Button */}
               <button
                 className={`mt-4 w-full lg:w-auto py-2 px-6 rounded-md transition ${
-                  newName !== userData.name ||
+                  newName !== `${userData.first_name} ${userData.last_name}` ||
                   currentPassword ||
                   newPassword ||
                   confirmPassword
@@ -1189,7 +1219,8 @@ export default function UserDashboardPage() {
                 onClick={handleUpdateProfile}
                 disabled={
                   !(
-                    newName !== userData.name ||
+                    newName !==
+                      `${userData.first_name} ${userData.last_name}` ||
                     currentPassword ||
                     newPassword ||
                     confirmPassword

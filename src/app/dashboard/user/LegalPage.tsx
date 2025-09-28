@@ -179,6 +179,12 @@ export default function LegalPage({ userData }: LegalPageProps) {
 
   const COLORS = ["#4f46e5", "#10b981", "#f59e0b", "#ef4444"];
 
+  function isComplianceRecord(
+    item: Case | ComplianceRecord
+  ): item is ComplianceRecord {
+    return "compliance_number" in item;
+  }
+
   return (
     <div className="p-6 space-y-6">
       {/* Top Section: Cards + Pie Chart */}
@@ -390,8 +396,11 @@ export default function LegalPage({ userData }: LegalPageProps) {
                   <td className="px-4 py-2 border">
                     {"assigned_admin" in item
                       ? item.assigned_admin
-                      : item.admin_name || "-"}
+                      : isComplianceRecord(item)
+                      ? item.admin_name || "-"
+                      : "-"}
                   </td>
+
                   <td className="px-4 py-2 border">
                     {item.user_full_name || "-"}
                   </td>
