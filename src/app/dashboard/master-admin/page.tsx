@@ -2467,7 +2467,7 @@ function ChartCard<T>({
 }: {
   title: string;
   data: T[];
-  children: React.ReactNode;
+  children: React.ReactElement; // ✅ more specific
 }) {
   return (
     <div className="bg-white rounded-xl shadow p-4">
@@ -2482,13 +2482,14 @@ function ChartCard<T>({
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <>{children}</>
+            {children}
           </ResponsiveContainer>
         )}
       </div>
     </div>
   );
 }
+
 
 // Types
 type UserApprovalRow = { approval_status: string; count: number };
