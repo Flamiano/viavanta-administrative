@@ -37,17 +37,16 @@ export default function ForgotPasswordPage() {
         throw new Error(data.error || "Something went wrong.");
       }
 
-      // Show success message
       setSuccessMsg("OTP has been sent to your email.");
-
-      // Redirect after 2 seconds
       setTimeout(() => {
         window.location.href = `/auth/forgot-reset?email=${encodeURIComponent(
           email
         )}`;
       }, 2000);
-    } catch (err: any) {
-      setErrorMsg(err.message);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "An unexpected error occurred.";
+      setErrorMsg(message);
     } finally {
       setLoading(false);
     }
