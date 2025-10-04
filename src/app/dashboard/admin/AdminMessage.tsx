@@ -132,42 +132,39 @@ const AdminMessage: React.FC<AdminMessageProps> = ({ adminData }) => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex flex-col h-screen bg-gray-50">
       {/* Top users scroll */}
-      <div className="flex overflow-x-auto overflow-y-hidden border-b p-4 space-x-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+      <div className="flex overflow-x-auto border-b p-3 space-x-5 bg-white shadow-sm scrollbar-thin scrollbar-thumb-gray-300">
         {users.map((u) => (
           <div
             key={u.id}
             onClick={() => setSelectedUser(u)}
-            className={`flex-shrink-0 flex flex-col items-center cursor-pointer min-w-[4rem] ${
-              selectedUser?.id === u.id ? "text-blue-600" : "text-gray-600"
+            className={`flex-shrink-0 flex flex-col items-center cursor-pointer transition-all ${
+              selectedUser?.id === u.id
+                ? "text-blue-600"
+                : "text-gray-600 hover:text-blue-500"
             }`}
           >
             <div
-              className={`w-14 h-14 rounded-full flex items-center justify-center ${
+              className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${
                 selectedUser?.id === u.id
-                  ? "border-2 border-blue-500 bg-blue-100"
-                  : "bg-gray-200"
+                  ? "border-2 border-blue-500 bg-blue-50 shadow-md"
+                  : "bg-gray-200 hover:bg-gray-300"
               }`}
             >
-              <UserIcon className="w-7 h-7" />
+              <UserIcon className="w-6 h-6" />
             </div>
-            {/* First + Last name stacked */}
-            <span className="text-xs mt-1 text-center leading-tight">
-              {u.first_name}
-            </span>
-            <span className="text-xs text-center leading-tight">
-              {u.last_name}
-            </span>
+            <span className="text-xs mt-1 font-medium">{u.first_name}</span>
+            <span className="text-xs">{u.last_name}</span>
           </div>
         ))}
       </div>
 
       {/* Chat Section */}
       {selectedUser ? (
-        <div className="flex-1 flex flex-col h-[calc(100vh-120px)]">
+        <div className="flex-1 flex flex-col h-[calc(100vh-130px)]">
           {/* Fixed header */}
-          <div className="flex items-center p-3 border-b bg-gray-900 text-white">
+          <div className="flex items-center p-3 border-b bg-blue-600 text-white shadow-md">
             <UserIcon className="w-5 h-5 mr-2" />
             <h1 className="text-sm font-semibold truncate">
               Chat with {getFullName(selectedUser)}
@@ -175,7 +172,7 @@ const AdminMessage: React.FC<AdminMessageProps> = ({ adminData }) => {
           </div>
 
           {/* Scrollable messages */}
-          <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 bg-gray-50 text-sm scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+          <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-gray-50 text-sm scrollbar-thin scrollbar-thumb-gray-300">
             {messages.map((msg, idx) => {
               const msgDate = new Date(msg.created_at).toDateString();
               const prevDate =
@@ -188,49 +185,50 @@ const AdminMessage: React.FC<AdminMessageProps> = ({ adminData }) => {
               return (
                 <div key={msg.id}>
                   {showDate && (
-                    <div className="text-center text-[10px] text-gray-500 my-2">
+                    <div className="text-center text-[11px] text-gray-500 my-2">
                       {formatDateHeader(msg.created_at)}
                     </div>
                   )}
 
                   <div
-                    className={`flex items-end mb-1 ${
+                    className={`flex items-end gap-2 mb-1 ${
                       isAdmin ? "justify-end" : "justify-start"
                     }`}
                   >
                     {/* User Avatar */}
                     {!isAdmin && (
-                      <div className="flex-shrink-0 mr-2">
-                        <div className="w-7 h-7 rounded-full bg-gray-300 flex items-center justify-center shadow">
-                          <UserIcon className="w-4 h-4 text-gray-700" />
-                        </div>
+                      <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center shadow">
+                        <UserIcon className="w-4 h-4 text-gray-700" />
                       </div>
                     )}
 
                     {/* Message Bubble */}
                     <div
-                      className={`max-w-[75%] md:max-w-[70%] px-3 py-2 rounded-lg shadow-sm ${
+                      className={`max-w-[80%] md:max-w-[65%] px-4 py-2 rounded-2xl shadow-sm ${
                         isAdmin
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 text-gray-900"
+                          ? "bg-blue-500 text-white rounded-br-none"
+                          : "bg-white border border-gray-200 text-gray-900 rounded-bl-none"
                       }`}
                     >
-                      <p>{msg.content}</p>
-                      <span className="block text-[10px] text-gray-400 mt-1">
+                      <p className="leading-snug">{msg.content}</p>
+                      <span
+                        className={`block text-[10px] mt-1 ${
+                          isAdmin ? "text-blue-100" : "text-gray-400"
+                        }`}
+                      >
                         {formatDate(msg.created_at)}
                       </span>
                     </div>
 
-                    {/* Admin Avatar */}
                     {isAdmin && (
                       <div className="flex-shrink-0 ml-2">
-                        <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden shadow">
+                        <div className="relative w-7 h-7 rounded-full overflow-hidden border border-blue-400 shadow">
                           <Image
-                            src="/logo/logo-dark-bg.png"
+                            src="/logo/logo-white-bg.png"
                             alt="Admin"
-                            className="w-full h-full object-cover"
                             fill
-                            priority
+                            sizes="28px"
+                            className="object-cover"
                           />
                         </div>
                       </div>
@@ -245,25 +243,25 @@ const AdminMessage: React.FC<AdminMessageProps> = ({ adminData }) => {
           </div>
 
           {/* Fixed input */}
-          <div className="p-3 border-t flex gap-2 bg-white">
+          <div className="p-3 border-t flex gap-2 bg-white sticky bottom-0">
             <input
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              className="flex-1 border rounded-lg p-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="flex-1 border border-gray-300 rounded-full p-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Type a message..."
               disabled={isSending}
             />
             <button
               onClick={sendMessage}
               disabled={!newMessage.trim() || isSending}
-              className={`px-4 rounded-lg text-sm transition ${
+              className={`px-4 py-2 rounded-full text-sm transition font-medium ${
                 !newMessage.trim() || isSending
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-blue-500 text-white hover:bg-blue-600 cursor-pointer"
+                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  : "bg-blue-500 text-white hover:bg-blue-600"
               }`}
             >
-              {isSending ? "Sending..." : "Send"}
+              {isSending ? "..." : "Send"}
             </button>
           </div>
         </div>
