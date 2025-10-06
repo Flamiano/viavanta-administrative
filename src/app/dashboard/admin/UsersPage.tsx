@@ -43,7 +43,6 @@ interface User {
   email: string;
   password?: string;
   approval_status: "Pending" | "Approved" | "Declined";
-  decline_reason?: string | null;
   visa_image_url?: string | null;
   passport_image_url?: string | null;
   valid_id_front_url?: string | null;
@@ -77,10 +76,10 @@ interface UpdateUserData {
   middle_name: string;
   last_name: string;
   birthday: string;
-  age: number | "";
+  age: number | null;
   contact_number: string;
   address: string;
-  zipcode: string;
+  zipcode: number | null;
   email: string;
   approval_status: "Pending" | "Approved" | "Declined";
   password?: string;
@@ -212,57 +211,58 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
   };
 
   // Editing
-  const handleUpdateUser = async (id: number) => {
+  const handleUpdateUser = async (id: number): Promise<void> => {
     try {
-      // fetch current user to compare approval_status
+      // Fetch the existing user for comparison
       const { data: existingUser, error: fetchError } = await supabase
         .from("users")
         .select("approval_status, email")
         .eq("id", id)
         .single();
 
-      if (fetchError) throw fetchError;
+      if (fetchError) throw new Error(fetchError.message);
 
-      // build update payload
+      // Create an update payload using your FormData
       const updateData: UpdateUserData = {
-        first_name: form.first_name,
-        middle_name: form.middle_name,
-        last_name: form.last_name,
+        first_name: form.first_name.trim(),
+        middle_name: form.middle_name.trim(),
+        last_name: form.last_name.trim(),
         birthday: form.birthday,
-        age: form.age,
-        contact_number: form.contact_number,
-        address: form.address,
-        zipcode: form.zipcode,
-        email: form.email,
+        age: form.age === "" ? null : Number(form.age),
+        contact_number: form.contact_number.trim(),
+        address: form.address.trim(),
+        zipcode: form.zipcode === "" ? null : Number(form.zipcode),
+        email: form.email.trim(),
         approval_status: form.approval_status || "Pending",
       };
 
       if (form.password && form.password.trim() !== "") {
-        updateData.password = form.password;
+        updateData.password = form.password.trim();
       }
 
-      // if approval is being granted now, attach admin ID + timestamp
+      // If user just got approved now, record admin and timestamp
       if (
         existingUser?.approval_status !== "Approved" &&
         updateData.approval_status === "Approved"
       ) {
-        updateData.approved_by = adminId; // <-- from props
+        if (!adminData?.id) throw new Error("Admin ID missing.");
+        updateData.approved_by = adminData.id;
         updateData.approved_at = new Date().toISOString();
       }
 
-      // push update to supabase
-      const { data: _data, error } = await supabase
+      console.log("Updating user with:", updateData);
+
+      // Send update to Supabase
+      const { error: updateError } = await supabase
         .from("users")
         .update(updateData)
-        .eq("id", id)
-        .select();
+        .eq("id", id);
 
-      if (error) throw error;
+      if (updateError) throw new Error(updateError.message);
 
-      // refresh users table
       await fetchUsers();
 
-      // Send email only if newly approved
+      // Send approval email if newly approved
       if (
         existingUser?.approval_status !== "Approved" &&
         updateData.approval_status === "Approved"
@@ -280,7 +280,9 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
       setUpdateSuccess("User updated successfully!");
       setShowEditModal(false);
     } catch (err) {
-      console.error("Error updating user:", err);
+      const message =
+        err instanceof Error ? err.message : "An unknown error occurred.";
+      console.error("Error updating user:", message);
       setUpdateSuccess("Failed to update user.");
     }
   };
@@ -457,39 +459,43 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
       setFormError("Passwords do not match.");
       return;
     }
+
     try {
       setCreating(true);
       setFormError(null);
-      const { error } = await supabase.from("users").insert([
-        {
-          first_name: form.first_name,
-          middle_name: form.middle_name,
-          last_name: form.last_name,
-          birthday: form.birthday,
-          age: form.age,
-          contact_number: form.contact_number,
-          address: form.address,
-          zipcode: form.zipcode,
-          email: form.email,
-          password: form.password,
-          approval_status: "Approved", // Auto approve
-          decline_reason: null, // clears any decline text
-        },
-      ]);
-      if (error) throw error;
+
+      const newUser = {
+        first_name: form.first_name.trim(),
+        middle_name: form.middle_name.trim(),
+        last_name: form.last_name.trim(),
+        birthday: form.birthday,
+        age: form.age === "" ? null : Number(form.age),
+        contact_number: form.contact_number.trim(),
+        address: form.address.trim(),
+        zipcode: form.zipcode === "" ? null : Number(form.zipcode),
+        email: form.email.trim().toLowerCase(),
+        password: form.password.trim(),
+        approval_status: "Approved" as const,
+        approved_by: adminData?.id ?? null,
+        approved_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase.from("users").insert([newUser]);
+
+      if (error) {
+        console.error("Error creating user:", error.message);
+        setFormError(error.message);
+        return;
+      }
 
       setCreatedSuccess("User created successfully!");
       setShowWizard(false);
-      fetchUsers();
+      await fetchUsers();
       resetForm();
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        console.error(err.message);
-        setFormError(err.message);
-      } else {
-        console.error(err);
-        setFormError("Unknown error occurred");
-      }
+    } catch (error) {
+      const err = error as Error;
+      console.error("Error creating user:", err.message);
+      setFormError(err.message);
     } finally {
       setCreating(false);
     }
@@ -719,8 +725,8 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
                           address: user.address,
                           zipcode: user.zipcode,
                           email: user.email,
-                          password: "", 
-                          confirm: "", 
+                          password: "",
+                          confirm: "",
                           approval_status: user.approval_status || "Pending",
                         });
                         setShowEditModal(true);
