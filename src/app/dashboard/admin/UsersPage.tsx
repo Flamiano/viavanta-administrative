@@ -91,7 +91,7 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const adminId = adminData?.id;
@@ -367,16 +367,35 @@ const UsersPage: React.FC<UsersPageProps> = ({ adminData }) => {
         return setFormError("First name is required.");
       if (!form.last_name.trim()) return setFormError("Last name is required.");
       if (!form.birthday) return setFormError("Birthday is required.");
-      if (!form.age || form.age <= 0)
-        return setFormError(
-          "Please provide a valid birthday to calculate age."
-        );
+
+      // Calculate age
+      const birthDate = new Date(form.birthday);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
+        age--;
+      }
+
+      if (age < 18) return setFormError("You must be at least 18 years old.");
+      form.age = age;
 
       setStep(2);
     } else if (step === 2) {
       // Step 2: Other Info
       if (!form.contact_number.trim())
         return setFormError("Contact number is required.");
+
+      // Contact number validation: must start with 09 and be 11 digits
+      const contactRegex = /^09\d{9}$/;
+      if (!contactRegex.test(form.contact_number))
+        return setFormError(
+          "Contact number must start with 09 and be exactly 11 digits."
+        );
+
       if (!form.address.trim()) return setFormError("Address is required.");
       if (!form.zipcode.trim()) return setFormError("Zip code is required.");
 
