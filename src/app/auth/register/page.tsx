@@ -122,7 +122,20 @@ export default function RegisterPage() {
     } else if (step === 3) {
       // Step 3: Other Info
       if (!birthday) return setFormError("Birthday is required.");
-      if (!age) return setFormError("Please provide a valid birthday.");
+
+      // Check if age is at least 18
+      const birthDate = new Date(birthday);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      const dayDiff = today.getDate() - birthDate.getDate();
+      if (
+        age < 18 ||
+        (age === 18 && (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)))
+      ) {
+        return setFormError("You must be at least 18 years old.");
+      }
+
       if (!address.trim()) return setFormError("Address is required.");
       if (!zipCode.trim()) return setFormError("Zip code is required.");
       setStep(4);
@@ -130,7 +143,13 @@ export default function RegisterPage() {
       // Step 4: Important Info
       if (!email || !validateEmail(email))
         return setFormError("Enter a valid email address.");
+
+      // Contact number validation: 11 digits and starts with "09"
       if (!contact.trim()) return setFormError("Contact number is required.");
+      if (!/^09\d{9}$/.test(contact.trim()))
+        return setFormError(
+          "Contact number must be 11 digits and start with '09'."
+        );
 
       // Check file uploads
       if (!visaFile) return setFormError("Visa picture is required.");

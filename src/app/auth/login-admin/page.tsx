@@ -75,9 +75,9 @@ export default function AdminLoginPage() {
         return;
       }
 
-      // Optional: Role check if needed
-      if (!["admin", "master"].includes(admin.role)) {
-        setErrorMsg("Unauthorized role.");
+      // Allow only admins
+      if (admin.role !== "admin") {
+        setErrorMsg("Unauthorized role. Only admins can log in here.");
         return;
       }
 

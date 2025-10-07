@@ -14,13 +14,12 @@ export type Admin = {
   name: string;
   email: string;
   password: string;
-  role: "admin" | "master";  
+  role: "admin" | "master";
   created_by?: number | null;
   created_at: string; // timestamp
   updated_at: string; // timestamp
   session_token?: string | null;
 };
-
 
 export default function MasterAdminLoginPage() {
   const router = useRouter();
@@ -38,13 +37,24 @@ export default function MasterAdminLoginPage() {
 
     try {
       const admin = JSON.parse(storedAdmin);
-      if (admin && admin.role === "master") {
+      if (admin && admin.role === "admin") {
+        // Staff/admin is logged in
         setAlreadyLoggedInAdmin(admin);
+      } else if (admin && admin.role === "master") {
+        // Master is already logged in
+        router.push("/dashboard/master-admin");
       }
     } catch (err) {
-      console.error("Error checking master admin session:", err);
+      console.error("Error checking admin session:", err);
     }
-  }, []);
+  }, [router]);
+
+  const handleLogoutAdmin = () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("admin"); // clear any existing admin/staff session
+    }
+    setAlreadyLoggedInAdmin(null); // hide the warning
+  };
 
   function generateToken() {
     if (typeof crypto !== "undefined" && crypto.randomUUID) {
@@ -89,7 +99,7 @@ export default function MasterAdminLoginPage() {
           name: master.name,
           email: master.email,
           role: master.role,
-          session_token: newToken, 
+          session_token: newToken,
         })
       );
 
@@ -115,18 +125,18 @@ export default function MasterAdminLoginPage() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="relative z-10 w-full max-w-md bg-white shadow-lg rounded-2xl p-6 sm:p-8 max-h-screen overflow-y-auto"
       >
-        {alreadyLoggedInAdmin && (
+        {alreadyLoggedInAdmin && alreadyLoggedInAdmin.role === "admin" && (
           <div className="mb-4 p-3 bg-yellow-50 border border-yellow-300 rounded-lg text-sm text-yellow-800 flex flex-col sm:flex-row justify-between items-center gap-2 text-center">
             <span>
               You are currently logged in as{" "}
-              <strong>{alreadyLoggedInAdmin.name}</strong>. Go to{" "}
+              <strong>{alreadyLoggedInAdmin.name}</strong> (Staff/Admin). Please{" "}
               <button
-                onClick={() => router.push("/dashboard/master-admin")}
+                onClick={handleLogoutAdmin}
                 className="text-blue-600 hover:underline font-medium cursor-pointer"
               >
-                Dashboard
-              </button>
-              .
+                log out
+              </button>{" "}
+              first before logging in as Master.
             </span>
           </div>
         )}

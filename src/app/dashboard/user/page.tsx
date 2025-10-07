@@ -614,15 +614,28 @@ export default function UserDashboardPage() {
         {active === "Dashboard" && userData && (
           <div className="mt-4 space-y-6 max-w-full">
             {/* Welcome Card */}
-            <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-indigo-600 flex items-center gap-4">
-              <Home className="w-8 h-8 text-indigo-600" />
+            <div className="bg-gradient-to-r from-white to-indigo-50 p-6 rounded-xl shadow-md border-l-4 border-indigo-600 flex items-center gap-5 hover:shadow-lg transition-shadow duration-300">
+              <div className="bg-indigo-100 p-3 rounded-full">
+                <Home className="w-6 h-6 text-indigo-600" />
+              </div>
+
               <div>
-                <p className="text-lg text-gray-700">
+                <p className="text-lg text-gray-700 leading-tight">
                   Welcome back,{" "}
-                  <span className="font-medium">{userData.email}</span>!
+                  <span className="font-semibold text-gray-900 inline-block">
+                    {userData?.first_name} {userData?.last_name}
+                  </span>
+                  <br />
+                  <small className="text-sm text-gray-500">
+                    ({userData?.email})
+                  </small>
                 </p>
-                <p className="text-sm text-gray-500">
-                  Today is {new Date().toLocaleDateString()}
+
+                <p className="text-sm text-gray-500 mt-2 italic">
+                  Today is{" "}
+                  <span className="text-gray-700 font-medium">
+                    {new Date().toLocaleDateString()}
+                  </span>
                 </p>
               </div>
             </div>

@@ -31,13 +31,9 @@ type Facility = {
   description: string;
   status: "Available" | "Under Maintenance" | "Reserved";
   created_at: string;
+  updated_at?: string;
   admin_id?: number;
-  admins?: {
-    id: number;
-    name: string;
-    email: string;
-  } | null;
-
+  creator?: { id: number; name: string; email: string } | null;
   facility_reservations?: FacilityReservation[];
 };
 
@@ -111,29 +107,29 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
       .from("facilities")
       .select(
         `
-      *,
-      admins!facilities_admin_id_fkey (id, name, email),
-      facility_reservations (
-        id,
-        reservation_date,
-        start_time,
-        end_time,
-        created_at,
-        users (
+        *,
+        creator:admin_id (id, name, email),
+        facility_reservations (
           id,
-          first_name,
-          middle_name,
-          last_name,
-          email,
-          contact_number,
-          address
+          reservation_date,
+          start_time,
+          end_time,
+          created_at,
+          users (
+            id,
+            first_name,
+            middle_name,
+            last_name,
+            email,
+            contact_number,
+            address
+          )
         )
-      )
-    `
+      `
       )
       .order("id", { ascending: true });
 
-    if (error) console.error(error);
+    if (error) console.error("Fetch error:", error.message);
     else setFacilities(data || []);
 
     setLoading(false);
@@ -192,30 +188,68 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
   };
 
   const validateStep2 = () => {
-    if (!formData.driver_name || !formData.driver_name.trim())
+    // Validate driver name
+    if (!formData.driver_name || !formData.driver_name.trim()) {
       return "Driver name is required.";
-    if (!formData.driver_number || !/^[0-9]+$/.test(formData.driver_number))
-      return "Valid driver number is required.";
-    if (!formData.plate_number || !formData.plate_number.trim())
-      return "Plate number is required.";
+    }
 
-    // Check uniqueness: disallow same plate_number for different drivers
+    // Validate driver number: must start with 09 or 11 and be numeric
+    const driverNumberPattern = /^09\d{9}$/;
+    if (
+      !formData.driver_number ||
+      !driverNumberPattern.test(formData.driver_number)
+    ) {
+      return "Driver number must start with 09 and be exactly 11 digits.";
+    }
+
+    // Validate plate number
+    if (!formData.plate_number || !formData.plate_number.trim()) {
+      return "Plate number is required.";
+    }
+
+    // Validate plate number: must be exactly 6 characters with both letters and numbers
+    const plateNumberPattern = /^(?=.*[A-Z])(?=.*\d)[A-Z\d]{6}$/i;
+    if (
+      !formData.plate_number ||
+      !plateNumberPattern.test(formData.plate_number.trim())
+    ) {
+      return "Plate number must be exactly 6 characters and contain both letters and numbers (e.g., NYE435).";
+    }
+
+    // Check uniqueness of plate number (ignore current facility when editing)
     const duplicate = facilities.find(
       (f) =>
-        f.plate_number.toLowerCase() === formData.plate_number?.toLowerCase() &&
-        f.id !== editingFacility?.id // allow current facility when editing
+        f.plate_number.toUpperCase() ===
+          formData.plate_number?.trim().toUpperCase() &&
+        f.id !== editingFacility?.id
     );
     if (duplicate) {
       return `Plate number "${formData.plate_number}" is already assigned to ${duplicate.driver_name}.`;
     }
 
-    if (!formData.pickup_location || !formData.pickup_location.trim())
+    // Validate pickup location
+    if (!formData.pickup_location || !formData.pickup_location.trim()) {
       return "Pickup location is required.";
-    if (formData.capacity == null || Number.isNaN(formData.capacity))
+    }
+
+    // Validate capacity: minimum 1, maximum 8
+    const capacity = Number(formData.capacity);
+    if (formData.capacity == null || Number.isNaN(capacity)) {
       return "Capacity is required.";
-    if ((formData.capacity as number) < 1)
+    }
+    if (capacity < 1) {
       return "Capacity must be at least 1.";
-    if (!formData.status) return "Status is required.";
+    }
+    if (capacity > 8) {
+      return "Capacity cannot exceed 8 passengers.";
+    }
+
+    // Validate status
+    if (!formData.status) {
+      return "Status is required.";
+    }
+
+    // All validations passed
     return null;
   };
 
@@ -227,33 +261,52 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
     setStep(1);
   };
 
-  // Submit add/update
+  // Submit add (Add-Only)
   const handleSubmit = async () => {
     setFormError(null);
+
+    // Validate current step
     const err =
       step === 1 ? validateStep1() : step === 2 ? validateStep2() : null;
     if (err) return setFormError(err);
 
     setCreating(true);
+
     try {
-      if (editingFacility) {
-        const { error } = await supabase
-          .from("facilities")
-          .update(formData)
-          .eq("id", editingFacility.id);
-        if (error) return setFormError(error.message);
-      } else {
-        const { error } = await supabase.from("facilities").insert([
+      const cleanedData = {
+        ...formData,
+        capacity: formData.capacity ? Number(formData.capacity) : null,
+        driver_number: formData.driver_number?.trim() || "0",
+        status: formData.status || "Available",
+      };
+
+      // Add .select() to get the inserted row
+      const { data: insertedData, error } = await supabase
+        .from("facilities")
+        .insert([
           {
-            ...formData,
-            status: formData.status ?? "Available",
-            admin_id: adminId, //creator of facilities
+            ...cleanedData,
+            admin_id: adminId, // ensure column exists
+            created_at: new Date().toISOString(),
           },
-        ]);
-        if (error) return setFormError(error.message);
+        ])
+        .select(); // <--- important
+
+      if (error) {
+        console.error("Insert error:", error.message);
+        setFormError(error.message);
+        return;
       }
+
+      // Update local state immediately
+      setFacilities((prev) => [...prev, insertedData![0]]);
+
+      // Reset form and close modal
       resetForm();
-      fetchFacilities();
+      setModalOpen(false);
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      setFormError("Unexpected error occurred. Please try again.");
     } finally {
       setCreating(false);
     }
@@ -551,10 +604,13 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
 
               {/* Footer section (always at bottom) */}
               <div className="mt-4 flex flex-col gap-2">
-                {/* Created by */}
-                <div className="bg-gray-800/40 px-3 py-2 rounded-lg text-xs text-gray-300">
-                  <span className="font-medium text-gray-200">Created By:</span>{" "}
-                  {facility.admins?.name ?? "Unknown"}
+                <div className="bg-gray-800/40 px-3 py-2 rounded-lg text-xs text-gray-300 space-y-1">
+                  <div>
+                    <span className="font-medium text-gray-200">
+                      Created By:
+                    </span>{" "}
+                    {facility.creator?.name ?? "Unknown"}
+                  </div>
                 </div>
 
                 {/* Status + Actions */}
@@ -596,16 +652,6 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
                   {/* Buttons */}
                   <div className="flex gap-2">
                     <button
-                      onClick={() => {
-                        setEditingFacility(facility);
-                        setFormData(facility);
-                        setModalOpen(true);
-                      }}
-                      className="p-2 rounded-full bg-yellow-900/40 text-yellow-300 hover:bg-yellow-800/60 transition cursor-pointer"
-                    >
-                      <Pencil size={16} />
-                    </button>
-                    <button
                       onClick={() => handleDelete(facility.id)}
                       className="p-2 rounded-full bg-red-900/40 text-red-300 hover:bg-red-800/60 transition cursor-pointer"
                     >
@@ -631,7 +677,6 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
               exit={{ opacity: 0 }}
               onClick={() => {
                 setModalOpen(false);
-                setEditingFacility(null);
                 setFormData({});
               }}
             />
@@ -646,21 +691,13 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
               <div className="w-full max-w-xs sm:max-w-lg bg-white rounded-2xl shadow-xl border border-gray-200 flex flex-col max-h-[90vh] overflow-y-auto">
                 {/* Header */}
                 <div className="bg-gray-900 text-white px-4 sm:px-6 py-3 border-b flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold text-sm sm:text-base">
-                      {editingFacility ? "Edit Facility" : "Add Facility"}
-                    </h3>
-                    <p className="text-xs text-gray-500">
-                      {editingFacility
-                        ? "Update facility details"
-                        : "Step-by-step setup"}
-                    </p>
-                  </div>
+                  <h3 className="font-semibold text-sm sm:text-base">
+                    Add Facility
+                  </h3>
                   <button
                     className="p-2 rounded hover:text-gray-600 cursor-pointer"
                     onClick={() => {
                       setModalOpen(false);
-                      setEditingFacility(null);
                       setFormData({});
                     }}
                   >
@@ -790,7 +827,7 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
                         <input
                           type="text"
                           name="plate_number"
-                          placeholder="e.g., ABC-1234"
+                          placeholder="e.g., NYE435"
                           value={formData.plate_number || ""}
                           onChange={handleChange}
                           className="w-full border rounded-lg px-2 py-2"
@@ -873,7 +910,8 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
                             <strong>Driver:</strong> {formData.driver_name}
                           </li>
                           <li>
-                            <strong>Driver:</strong> {formData.driver_number}
+                            <strong>Driver Number:</strong>{" "}
+                            {formData.driver_number}
                           </li>
                           <li>
                             <strong>Plate:</strong> {formData.plate_number}
@@ -905,6 +943,7 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
                   >
                     Back
                   </button>
+
                   {step < 3 ? (
                     <button
                       className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
@@ -914,10 +953,10 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
                         if (step === 2) err = validateStep2();
 
                         if (err) {
-                          setFormError(err); // show validation error
+                          setFormError(err);
                         } else {
                           setFormError(null);
-                          setStep(step + 1); // move to next step only if valid
+                          setStep(step + 1);
                         }
                       }}
                     >
@@ -928,7 +967,7 @@ export default function FacilitiesPage({ adminData }: FacilitiesPageProps) {
                       className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
                       onClick={handleSubmit}
                     >
-                      {editingFacility ? "Update Facility" : "Save Facility"}
+                      Add Facility
                     </button>
                   )}
                 </div>

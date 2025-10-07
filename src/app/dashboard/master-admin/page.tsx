@@ -639,57 +639,59 @@ export default function MasterAdminDashboard() {
             transition={{ duration: 0.3 }}
             className="h-full"
           >
-            <h1 className="flex justify-between items-center text-3xl font-bold sticky top-0 z-20 pt-2 pb-2 px-4 border-b border-gray-200 bg-white">
-              {/* Leftside Active page name and Arrow */}
-              <div className="flex items-center gap-3">
-                {/* Collapse/Expand Button */}
-                <div className="relative hidden lg:flex group">
-                  <button
-                    onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                    aria-label={
-                      sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
-                    }
-                    className="bg-gray-200 text-gray-600 hover:bg-gray-300 hover:text-gray-800 rounded-full shadow p-1 cursor-pointer"
+            {masterData?.role === "master" && (
+              <h1 className="flex justify-between items-center text-3xl font-bold sticky top-0 z-20 pt-2 pb-2 px-4 border-b border-gray-200 bg-white">
+                {/* Leftside Active page name and Arrow */}
+                <div className="flex items-center gap-3">
+                  {/* Collapse/Expand Button */}
+                  <div className="relative hidden lg:flex group">
+                    <button
+                      onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                      aria-label={
+                        sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
+                      }
+                      className="bg-gray-200 text-gray-600 hover:bg-gray-300 hover:text-gray-800 rounded-full shadow p-1 cursor-pointer"
+                    >
+                      {sidebarCollapsed ? (
+                        <ChevronsRight className="w-6 h-6" />
+                      ) : (
+                        <ChevronsLeft className="w-6 h-6" />
+                      )}
+                    </button>
+
+                    {/* Tooltip */}
+                    <span className="absolute left-1/2 -translate-x-1/2 -top-8 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                      {sidebarCollapsed ? "Open sidebar" : "Close sidebar"}
+                    </span>
+                  </div>
+
+                  {/* Active Page Title */}
+                  <span>{active}</span>
+                </div>
+
+                {/* Right side Date, Time and Profile */}
+                <div className="hidden lg:flex items-center gap-4">
+                  {/* Date & Time */}
+                  <div className="text-right font-semibold">
+                    <span className="text-lg">{formattedDate}</span>
+                    <span className="ml-4 text-lg">{formattedTime}</span>
+                  </div>
+
+                  {/* Profile Icon */}
+                  <div
+                    className="relative group flex items-center gap-2 cursor-pointer"
+                    onClick={() => setActive("Security")}
                   >
-                    {sidebarCollapsed ? (
-                      <ChevronsRight className="w-6 h-6" />
-                    ) : (
-                      <ChevronsLeft className="w-6 h-6" />
-                    )}
-                  </button>
+                    <User className="w-10 h-10 text-gray-600 rounded-full p-2 bg-gray-200" />
 
-                  {/* Tooltip */}
-                  <span className="absolute left-1/2 -translate-x-1/2 -top-8 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                    {sidebarCollapsed ? "Open sidebar" : "Close sidebar"}
-                  </span>
+                    {/* Tooltip */}
+                    <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                      {masterData?.name || "Profile"}
+                    </span>
+                  </div>
                 </div>
-
-                {/* Active Page Title */}
-                <span>{active}</span>
-              </div>
-
-              {/* Right side Date, Time and Profile */}
-              <div className="hidden lg:flex items-center gap-4">
-                {/* Date & Time */}
-                <div className="text-right font-semibold">
-                  <span className="text-lg">{formattedDate}</span>
-                  <span className="ml-4 text-lg">{formattedTime}</span>
-                </div>
-
-                {/* Profile Icon */}
-                <div
-                  className="relative group flex items-center gap-2 cursor-pointer"
-                  onClick={() => setActive("Security")}
-                >
-                  <User className="w-10 h-10 text-gray-600 rounded-full p-2 bg-gray-200" />
-
-                  {/* Tooltip */}
-                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                    {masterData?.name || "Profile"}
-                  </span>
-                </div>
-              </div>
-            </h1>
+              </h1>
+            )}
 
             {/* Dashboard */}
             {active === "Dashboard" && (
@@ -2489,7 +2491,6 @@ function ChartCard<T>({
     </div>
   );
 }
-
 
 // Types
 type UserApprovalRow = { approval_status: string; count: number };
